@@ -1,0 +1,38 @@
+/**
+ * Theme tokens — light / dark via next-themes (`class="dark"` on <html>).
+ * Covers the shell page and the theme toggle control.
+ */
+
+:root {
+  color-scheme: light;
+
+  --term-font: var(--font-geist-mono), ui-monospace, monospace;
+
+  --app-bg: #f4f7f6;
+  --app-fg: #153048;
+
+  --term-bg-elevated: #ffffff;
+  --term-border: #c8ddd6;
+  --term-text: #0f241e;
+  --term-dim: #5a726d;
+  --term-accent: #0a8f7a;
+  --term-glow: rgba(10, 143, 122, 0.28);
+  --term-nav-hover-bg: rgba(10, 143, 122, 0.1);
+  --term-submit-fg: #ffffff;
+}
+
+:root.dark {
+  color-scheme: dark;
+
+  --app-bg: #070a0e;
+  --app-fg: #c8e6ff;
+
+  --term-bg-elevated: #0c1219;
+  --term-border: #1a2836;
+  --term-text: #c8e6ff;
+  --term-dim: #5c7a94;
+  --term-accent: #00e5c8;
+  --term-glow: rgba(0, 229, 200, 0.35);
+  --term-nav-hover-bg: rgba(0, 229, 200, 0.08);
+  --term-submit-fg: #070a0e;
+}
