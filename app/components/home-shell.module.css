@@ -1,0 +1,17 @@
+.landingLayer {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.55s ease 0.12s,
+    visibility 0s linear 0.65s;
+}
+
+.landingLayer.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.55s ease 0.12s,
+    visibility 0s linear 0s;
+}

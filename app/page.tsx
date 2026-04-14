@@ -1,10 +1,10 @@
-import { ThemeToggle } from "./components/theme-toggle";
-import styles from "./page.module.css";
+import { HomeShell } from "./components/home-shell";
+import { LandingPage } from "./components/landing-page";
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <ThemeToggle />
-    </main>
+    <HomeShell>
+      <LandingPage />
+    </HomeShell>
   );
 }

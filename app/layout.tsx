@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sac Tech Week",
-  description: "Theme preview",
+  title: "Sacramento Tech Week",
+  description: "Sacramento Tech Week",
 };
 
 export default function RootLayout({

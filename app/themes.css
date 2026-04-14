@@ -19,6 +19,19 @@
   --term-glow: rgba(10, 143, 122, 0.28);
   --term-nav-hover-bg: rgba(10, 143, 122, 0.1);
   --term-submit-fg: #ffffff;
+
+  /* Landing (mockup-aligned) */
+  --landing-yellow: #f2c94c;
+  --landing-ink: #111111;
+  --landing-teal: #2d9cdb;
+  --landing-rule: #0a0a0a;
+  --landing-module-bg: #e4ebe6;
+  --landing-comment: #c53030;
+  --landing-card-pink: #e86b9a;
+  --landing-card-mint: #2db5a8;
+  --landing-card-gold: #d4a21a;
+  --landing-muted: #5a656f;
+  --landing-surface: #ffffff;
 }
 
 :root.dark {
@@ -35,4 +48,13 @@
   --term-glow: rgba(0, 229, 200, 0.35);
   --term-nav-hover-bg: rgba(0, 229, 200, 0.08);
   --term-submit-fg: #070a0e;
+
+  --landing-yellow: #f2c94c;
+  --landing-ink: #e8f0f5;
+  --landing-teal: #5cb3e8;
+  --landing-rule: #3d4a58;
+  --landing-module-bg: #0f1614;
+  --landing-comment: #ff6b6b;
+  --landing-muted: #8a9dad;
+  --landing-surface: #0c1219;
 }

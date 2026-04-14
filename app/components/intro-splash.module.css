@@ -1,0 +1,163 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow: hidden;
+  background: var(--app-bg);
+  pointer-events: auto;
+}
+
+.overlay.exiting {
+  animation: introOut 0.68s cubic-bezier(0.33, 0, 0.67, 0.35) forwards;
+}
+
+.glow {
+  position: absolute;
+  inset: -35% -20% auto;
+  height: 85%;
+  max-height: 720px;
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 0%,
+    var(--term-glow),
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--term-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--term-border) 1px, transparent 1px);
+  background-size: min(3.5rem, 8vw) min(3.5rem, 8vw);
+  opacity: 0.12;
+  mask-image: radial-gradient(
+    ellipse 72% 65% at 50% 42%,
+    #000 0%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+.toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(0.35rem, 1.5vw, 0.75rem);
+  padding-block: 2rem;
+  animation: heroIn 0.75s ease-out both;
+}
+
+.city {
+  margin: 0;
+  font-size: clamp(0.72rem, 1.35vw, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--term-dim);
+}
+
+.title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.88;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--app-fg);
+  text-shadow: 0 0 48px var(--term-glow);
+}
+
+.titleWord {
+  font-size: clamp(3.25rem, 14vw, 8.5rem);
+}
+
+.year {
+  margin: clamp(0.5rem, 2vw, 1rem) 0 0;
+  font-family: var(--term-font);
+  font-size: clamp(1.75rem, 6vw, 3rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--term-accent);
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 0.02em;
+  animation: cursorBlink 1.05s step-end infinite;
+}
+
+.skip {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--term-font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--term-dim);
+  background: transparent;
+  border: 1px solid var(--term-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.skip:hover {
+  color: var(--term-text);
+  border-color: var(--term-accent);
+  background: var(--term-nav-hover-bg);
+}
+
+.skip:focus-visible {
+  outline: 2px solid var(--term-accent);
+  outline-offset: 2px;
+}
+
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes introOut {
+  to {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes cursorBlink {
+  50% {
+    opacity: 0;
+  }
+}
