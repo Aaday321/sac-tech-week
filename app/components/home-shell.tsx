@@ -1,12 +1,39 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { IntroSplash } from "./intro-splash";
 import styles from "./home-shell.module.css";
 
 const HOLD_MS = 2600;
 const EXIT_MS = 680;
+
+/** Persists across client navigations so returning to `/` does not replay the intro. */
+const INTRO_SEEN_KEY = "sac-tech-week-intro-seen";
+
+function readIntroSeen(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  try {
+    return window.localStorage.getItem(INTRO_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeIntroSeen() {
+  try {
+    window.localStorage.setItem(INTRO_SEEN_KEY, "1");
+  } catch {
+    // Private mode or quota — intro may replay; acceptable.
+  }
+}
 
 type HomeShellProps = {
   children: ReactNode;
@@ -27,12 +54,21 @@ export function HomeShell({ children }: HomeShellProps) {
   const finishIntro = useCallback(() => {
     clearTimers();
     setPhase("exit");
-    doneTimer.current = setTimeout(() => setPhase("done"), EXIT_MS);
+    doneTimer.current = setTimeout(() => {
+      writeIntroSeen();
+      setPhase("done");
+    }, EXIT_MS);
   }, [clearTimers]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (readIntroSeen()) {
+      setPhase("done");
+      return;
+    }
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (reduce.matches) {
+      writeIntroSeen();
       setPhase("done");
       return;
     }

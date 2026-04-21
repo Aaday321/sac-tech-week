@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
 import { SacramentoSkyline } from "./sacramento-skyline";
 import { SponsorRow } from "./sponsor-row";
@@ -32,8 +33,7 @@ function IconSponsor() {
   );
 }
 
-const FOOTER_IMAGE =
-  "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80";
+const FOOTER_IMAGE = "/STW_footer.png";
 
 export function LandingPage() {
   return (
@@ -60,9 +60,9 @@ export function LandingPage() {
                 <div className={styles.headerNav}>
                   <ThemeToggle />
                   <nav className={styles.navLinks} aria-label="Primary">
-                    <a href="#vendors">./vendors</a>
-                    <a href="#producers">./producers</a>
-                    <a href="#sponsors-involve">./sponsors</a>
+                    <a href="#vendors">vendors</a>
+                    <a href="#producers">producers</a>
+                    <a href="#sponsors-involve">sponsors</a>
                   </nav>
                 </div>
               </div>
@@ -75,9 +75,8 @@ export function LandingPage() {
         </header>
 
         <section className={styles.module} aria-labelledby="get-involved-title">
-          <p className={styles.moduleComment}>// module: outreach</p>
           <h2 id="get-involved-title" className={styles.moduleTitle}>
-            ./get_involved
+            Get Involved
           </h2>
           <p className={styles.moduleLead}>
             Three ingress channels. One ops queue — we read every packet.
@@ -98,16 +97,15 @@ export function LandingPage() {
                   </div>
                   <div className={styles.cardText}>
                     <h3 className={styles.cardTitle}>Vendors</h3>
-                    <p className={styles.route}>route: /vendors</p>
                     <p className={styles.cardDesc}>
                       Booths, live demos, and hands-on product on the floor.
                     </p>
                   </div>
                 </div>
               </div>
-              <a className={styles.exec} href="#register-vendors">
-                exec register
-              </a>
+              <Link className={styles.exec} href="/vendors">
+                Register
+              </Link>
             </article>
 
             <article id="producers" className={styles.card}>
@@ -125,7 +123,6 @@ export function LandingPage() {
                   </div>
                   <div className={styles.cardText}>
                     <h3 className={styles.cardTitle}>Event producers</h3>
-                    <p className={styles.route}>route: /event-producers</p>
                     <p className={styles.cardDesc}>
                       Satellite meetups, hack nights, and workshops on the
                       calendar.
@@ -133,9 +130,9 @@ export function LandingPage() {
                   </div>
                 </div>
               </div>
-              <a className={styles.exec} href="#register-producers">
-                exec register
-              </a>
+              <Link className={styles.exec} href="/producers">
+                Register
+              </Link>
             </article>
 
             <article id="sponsors-involve" className={styles.card}>
@@ -153,16 +150,15 @@ export function LandingPage() {
                   </div>
                   <div className={styles.cardText}>
                     <h3 className={styles.cardTitle}>Sponsors</h3>
-                    <p className={styles.route}>route: /sponsors</p>
                     <p className={styles.cardDesc}>
                       Fuel the week — visibility that actually reaches builders.
                     </p>
                   </div>
                 </div>
               </div>
-              <a className={styles.exec} href="#register-sponsors">
-                exec register
-              </a>
+              <Link className={styles.exec} href="/sponsors">
+                Register
+              </Link>
             </article>
           </div>
         </section>
