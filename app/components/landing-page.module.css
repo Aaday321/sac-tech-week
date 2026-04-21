@@ -195,6 +195,11 @@
   width: min(980px, 100% - 2rem);
   margin: clamp(1.1rem, 3vw, 2rem) auto 3.5rem;
   padding: clamp(1.25rem, 2.6vw, 2rem);
+  border: 1px solid transparent;
+}
+
+:global(html.dark) .module {
+  border-color: color-mix(in srgb, var(--term-border) 85%, transparent);
 }
 
 .module::before {
@@ -204,8 +209,8 @@
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.62) 0%,
-    rgba(255, 255, 255, 0) 68%
+    var(--landing-module-gloss-start) 0%,
+    var(--landing-module-gloss-end) 68%
   );
 }
 
@@ -254,7 +259,7 @@
   padding: 1.1rem 1.15rem;
   background: var(--landing-surface);
   border-radius: 14px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: var(--landing-card-shadow);
 }
 
 :global(html.dark) .card {

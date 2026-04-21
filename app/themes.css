@@ -32,6 +32,11 @@
   --landing-card-gold: #d4a21a;
   --landing-muted: #5a656f;
   --landing-surface: #ffffff;
+  /* Get Involved module: top sheen (linear-gradient in landing-page) */
+  --landing-module-gloss-start: rgba(255, 255, 255, 0.62);
+  --landing-module-gloss-end: rgba(255, 255, 255, 0);
+  --landing-card-shadow: 0 1px 0 color-mix(in srgb, var(--landing-ink) 5%, transparent);
+  --landing-shadow-elevated: 0 18px 40px color-mix(in srgb, var(--landing-ink) 8%, transparent);
 }
 
 :root.dark {
@@ -57,4 +62,9 @@
   --landing-comment: #ff6b6b;
   --landing-muted: #8a9dad;
   --landing-surface: #0c1219;
+  /* Dark: keep sheen minimal so headings stay readable */
+  --landing-module-gloss-start: rgba(255, 255, 255, 0.04);
+  --landing-module-gloss-end: rgba(255, 255, 255, 0);
+  --landing-card-shadow: none;
+  --landing-shadow-elevated: 0 20px 48px color-mix(in srgb, var(--app-bg) 15%, #000 85%);
 }

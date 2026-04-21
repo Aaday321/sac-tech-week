@@ -45,7 +45,7 @@ export function LandingPage() {
               <div className={styles.headerRow}>
                 <div className={styles.brand}>
                   <h1 id="hero-heading" className={styles.srOnly}>
-                    Sacramento Tech Week 2099
+                    Sacramento Tech Week 2026
                   </h1>
                   <p className={styles.heroSac} aria-hidden>
                     Sacramento
@@ -54,7 +54,7 @@ export function LandingPage() {
                     Tech Week
                   </p>
                   <p className={styles.heroYear} aria-hidden>
-                    2099<span className={styles.heroCursor}>_</span>
+                    2026<span className={styles.heroCursor}>_</span>
                   </p>
                 </div>
                 <div className={styles.headerNav}>

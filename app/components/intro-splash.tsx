@@ -26,7 +26,7 @@ export function IntroSplash({ exiting, onSkip }: IntroSplashProps) {
           <span className={styles.titleWord}>Week</span>
         </h1>
         <p className={styles.year} aria-label="Twenty ninety-nine">
-          2099<span className={styles.cursor}>_</span>
+          2026<span className={styles.cursor}>_</span>
         </p>
       </div>
       <button type="button" className={styles.skip} onClick={onSkip}>
