@@ -1,19 +1,21 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
-import { RegistrationForm } from "./registration-form";
+import { RegistrationForm, type FormType } from "./registration-form";
 import styles from "../register-pages.module.css";
 
 type RegisterChannelLayoutProps = {
   title: string;
   /** CSS color for the left-column accent bar */
   accent: string;
+  formType: FormType;
   children: ReactNode;
 };
 
 export function RegisterChannelLayout({
   title,
   accent,
+  formType,
   children,
 }: RegisterChannelLayoutProps) {
   const copyStyle = {
@@ -35,7 +37,7 @@ export function RegisterChannelLayout({
             {children}
           </section>
           <aside className={styles.formColumn} aria-label="Registration form">
-            <RegistrationForm />
+            <RegistrationForm formType={formType} />
           </aside>
         </div>
       </main>
