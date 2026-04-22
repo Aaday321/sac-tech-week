@@ -5,6 +5,7 @@ export default function ProducersPage() {
     <RegisterChannelLayout
       title="Event producer registration"
       accent="var(--landing-card-mint)"
+      formType="producer"
     >
       <h2>Role</h2>
       <p>
