@@ -127,33 +127,19 @@ const DOT_COLOR_CLASS: Record<string, string> = {
 };
 
 export default function MapPage() {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [isSacramentoDay, setIsSacramentoDay] = useState(true);
   const [hoveredVenue, setHoveredVenue] = useState<string | null>(null);
   const [expandedVenue, setExpandedVenue] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
-    const hour = parseInt(
-      new Date().toLocaleString("en-US", {
-        timeZone: "America/Los_Angeles",
-        hour: "numeric",
-        hour12: false,
-      }),
-    );
-    setIsSacramentoDay(hour >= 6 && hour < 19);
   }, []);
 
-  const mapStyle = !mounted
-    ? "mapbox://styles/mapbox/dark-v11"
-    : theme === "light"
+  const mapStyle =
+    mounted && resolvedTheme === "light"
       ? "mapbox://styles/mapbox/light-v11"
-      : theme === "dark"
-        ? "mapbox://styles/mapbox/dark-v11"
-        : isSacramentoDay
-          ? "mapbox://styles/mapbox/light-v11"
-          : "mapbox://styles/mapbox/dark-v11";
+      : "mapbox://styles/mapbox/dark-v11";
 
   function handleMarkerClick(
     e: React.MouseEvent,
@@ -167,13 +153,7 @@ export default function MapPage() {
   }
 
   return (
-    <div
-      className={`${styles.page} ${
-        mounted && theme === "system" && isSacramentoDay
-          ? styles.forceLightUI
-          : ""
-      }`}
-    >
+    <div className={styles.page}>
       {/* ── Top Bar ── */}
       <header className={styles.topBar}>
         <Link href="/" className={styles.backLink}>

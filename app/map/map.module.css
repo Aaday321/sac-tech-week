@@ -752,159 +752,130 @@
 }
 
 /* ── Light Mode Overrides ────────────────────── */
-/* Each rule targets both:
-   1. html.light   — user picked Light
-   2. .forceLightUI — Auto mode + Sacramento daytime
-      (OS may be dark but the page overrides to light) */
+/* Triggered by html.light — set globally by SacramentoAutoTheme
+   (daytime in America/Los_Angeles) or when the user picks Light. */
 
-:global(html.light) .page,
-.page.forceLightUI {
+:global(html.light) .page {
   background: #f0f4f8;
   color: #1a2332;
 }
 
-:global(html.light) .topBar,
-.forceLightUI .topBar {
+:global(html.light) .topBar {
   background: rgba(245, 247, 250, 0.95);
   border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
-:global(html.light) .backLink,
-.forceLightUI .backLink {
+:global(html.light) .backLink {
   color: #009e8c;
 }
 
-:global(html.light) .backLink:hover,
-.forceLightUI .backLink:hover {
+:global(html.light) .backLink:hover {
   background: rgba(0, 158, 140, 0.1);
 }
 
-:global(html.light) .statusPill,
-.forceLightUI .statusPill {
+:global(html.light) .statusPill {
   color: #009e8c;
 }
 
-:global(html.light) .statusDot,
-.forceLightUI .statusDot {
+:global(html.light) .statusDot {
   background: #009e8c;
   box-shadow: 0 0 6px #009e8c;
 }
 
-:global(html.light) .feed,
-.forceLightUI .feed {
+:global(html.light) .feed {
   background: #f8f9fb;
   border-right-color: rgba(0, 0, 0, 0.07);
   scrollbar-color: rgba(0, 158, 140, 0.25) transparent;
 }
 
-:global(html.light) .feedSubheading,
-.forceLightUI .feedSubheading {
+:global(html.light) .feedSubheading {
   color: #009e8c;
 }
 
-:global(html.light) .feedHeading,
-.forceLightUI .feedHeading {
+:global(html.light) .feedHeading {
   color: #0e1c2f;
 }
 
-:global(html.light) .venueCard,
-.forceLightUI .venueCard {
+:global(html.light) .venueCard {
   border-color: rgba(0, 0, 0, 0.09);
   background: #ffffff;
   color: #1a2332;
 }
 
-:global(html.light) .venueCard:hover,
-.forceLightUI .venueCard:hover {
+:global(html.light) .venueCard:hover {
   border-color: rgba(0, 158, 140, 0.35);
   background: rgba(0, 158, 140, 0.04);
   box-shadow: 0 0 20px rgba(0, 158, 140, 0.07), inset 0 0 16px rgba(0, 158, 140, 0.03);
 }
 
-:global(html.light) .venueCard--active,
-.forceLightUI .venueCard--active {
+:global(html.light) .venueCard--active {
   border-color: rgba(0, 158, 140, 0.45);
   background: rgba(0, 158, 140, 0.05);
   box-shadow: 0 0 22px rgba(0, 158, 140, 0.09);
 }
 
-:global(html.light) .venueCardName,
-.forceLightUI .venueCardName {
+:global(html.light) .venueCardName {
   color: #0e1c2f;
 }
 
-:global(html.light) .venueCardDistrict,
-.forceLightUI .venueCardDistrict {
+:global(html.light) .venueCardDistrict {
   color: rgba(0, 130, 115, 0.85);
 }
 
-:global(html.light) .venueCardSep,
-.forceLightUI .venueCardSep {
+:global(html.light) .venueCardSep {
   color: rgba(0, 0, 0, 0.2);
 }
 
-:global(html.light) .venueCardTime,
-.forceLightUI .venueCardTime {
+:global(html.light) .venueCardTime {
   color: rgba(20, 40, 70, 0.55);
 }
 
-:global(html.light) .venueCardDesc,
-.forceLightUI .venueCardDesc {
+:global(html.light) .venueCardDesc {
   color: rgba(20, 40, 70, 0.62);
 }
 
-:global(html.light) .venueCardFooter,
-.forceLightUI .venueCardFooter {
+:global(html.light) .venueCardFooter {
   border-top-color: rgba(0, 0, 0, 0.06);
 }
 
-:global(html.light) .venueCardCapacity,
-.forceLightUI .venueCardCapacity {
+:global(html.light) .venueCardCapacity {
   color: rgba(20, 40, 70, 0.45);
 }
 
-:global(html.light) .venueCardArrow,
-.forceLightUI .venueCardArrow {
+:global(html.light) .venueCardArrow {
   color: rgba(0, 130, 115, 0.5);
 }
 
-:global(html.light) .venueCard:hover .venueCardArrow,
-.forceLightUI .venueCard:hover .venueCardArrow {
+:global(html.light) .venueCard:hover .venueCardArrow {
   color: #009e8c;
 }
 
-:global(html.light) .venueCardExpandedInner,
-.forceLightUI .venueCardExpandedInner {
+:global(html.light) .venueCardExpandedInner {
   border-top-color: rgba(0, 0, 0, 0.08);
 }
 
-:global(html.light) .scheduleItem,
-.forceLightUI .scheduleItem {
+:global(html.light) .scheduleItem {
   color: rgba(20, 40, 70, 0.58);
 }
 
-:global(html.light) .scheduleTime,
-.forceLightUI .scheduleTime {
+:global(html.light) .scheduleTime {
   color: rgba(0, 130, 115, 0.8);
 }
 
-:global(html.light) .venueCardCta,
-.forceLightUI .venueCardCta {
+:global(html.light) .venueCardCta {
   border-color: rgba(0, 158, 140, 0.45);
   background: rgba(0, 158, 140, 0.06);
   color: #009e8c;
 }
 
-:global(html.light) .venueCardCta:hover,
-.forceLightUI .venueCardCta:hover {
+:global(html.light) .venueCardCta:hover {
   background: rgba(0, 158, 140, 0.13);
   border-color: rgba(0, 158, 140, 0.75);
   box-shadow: 0 0 12px rgba(0, 158, 140, 0.2), inset 0 0 8px rgba(0, 158, 140, 0.05);
   color: #006b5e;
 }
 
-:global(html.light) .mapStatusLabel,
-.forceLightUI .mapStatusLabel {
+:global(html.light) .mapStatusLabel {
   color: #004d44;
   text-shadow:
     -1px -1px 0 #fff,
@@ -914,8 +885,7 @@
     0px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-:global(html.light) .mapStatusCoords,
-.forceLightUI .mapStatusCoords {
+:global(html.light) .mapStatusCoords {
   color: #111;
   text-shadow:
     -1px -1px 0 #fff,
@@ -925,8 +895,7 @@
     0px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-:global(html.light) .mapLegendItem,
-.forceLightUI .mapLegendItem {
+:global(html.light) .mapLegendItem {
   color: rgba(10, 30, 60, 0.45);
   text-shadow:
     -1px -1px 0 rgba(255, 255, 255, 0.9),
@@ -935,8 +904,7 @@
     1px 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-:global(html.light) .dotLabel,
-.forceLightUI .dotLabel {
+:global(html.light) .dotLabel {
   color: #004d44;
   text-shadow:
     -1px -1px 0 #fff,
@@ -949,11 +917,7 @@
 :global(html.light) .mapCorner--tl,
 :global(html.light) .mapCorner--tr,
 :global(html.light) .mapCorner--bl,
-:global(html.light) .mapCorner--br,
-.forceLightUI .mapCorner--tl,
-.forceLightUI .mapCorner--tr,
-.forceLightUI .mapCorner--bl,
-.forceLightUI .mapCorner--br {
+:global(html.light) .mapCorner--br {
   opacity: 0.25;
   border-color: #009e8c;
 }

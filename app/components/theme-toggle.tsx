@@ -2,19 +2,25 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { INTENT_KEY, getSacramentoResolvedTheme } from "../theme-provider";
 import styles from "./theme-toggle.module.css";
 
-const OPTIONS = [
-  { id: "light" as const, label: "Light" },
-  { id: "dark" as const, label: "Dark" },
-  { id: "system" as const, label: "Auto" },
+type Intent = "light" | "dark" | "auto";
+
+const OPTIONS: { id: Intent; label: string }[] = [
+  { id: "light", label: "Light" },
+  { id: "dark", label: "Dark" },
+  { id: "auto", label: "Auto" },
 ];
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [intent, setIntent] = useState<Intent>("auto");
 
   useEffect(() => {
+    const stored = localStorage.getItem(INTENT_KEY) as Intent | null;
+    setIntent(stored === "light" || stored === "dark" ? stored : "auto");
     setMounted(true);
   }, []);
 
@@ -26,7 +32,15 @@ export function ThemeToggle() {
     );
   }
 
-  const active = theme ?? "system";
+  function handleClick(id: Intent) {
+    setIntent(id);
+    localStorage.setItem(INTENT_KEY, id);
+    if (id === "auto") {
+      setTheme(getSacramentoResolvedTheme());
+    } else {
+      setTheme(id);
+    }
+  }
 
   return (
     <div className={styles.wrap}>
@@ -42,9 +56,9 @@ export function ThemeToggle() {
           <button
             key={id}
             type="button"
-            className={`${styles.btn} ${active === id ? styles.btnActive : ""}`}
-            onClick={() => setTheme(id)}
-            aria-pressed={active === id}
+            className={`${styles.btn} ${intent === id ? styles.btnActive : ""}`}
+            onClick={() => handleClick(id)}
+            aria-pressed={intent === id}
             aria-label={`${label} theme`}
             title={`${label} theme`}
           >
