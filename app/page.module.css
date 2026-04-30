@@ -95,3 +95,149 @@
   height: 100%;
   display: block;
 }
+
+.glitchOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  place-items: center;
+  pointer-events: none;
+}
+
+.glitchOverlay > * {
+  user-select: none;
+}
+
+.glitchLockup {
+  --mark-size: var(--glitch-mark-size, clamp(4.5rem, 15vw, 11rem));
+  --stack-size: var(--glitch-stack-size, calc(var(--mark-size) * 0.296));
+  --gap: var(--glitch-gap, calc(var(--mark-size) * 0.11));
+  --outline: max(0.2px, calc(var(--mark-size) * 0.0008));
+  display: grid;
+  grid-template-columns: max-content max-content;
+  column-gap: var(--gap);
+  align-content: center;
+}
+
+.glitchMark {
+  font-family: "STWMark", "Arial Black", "Segoe UI", sans-serif;
+  font-size: var(--mark-size);
+  font-style: italic;
+  letter-spacing: -0.045em;
+  line-height: 0.82;
+}
+
+.glitchStack {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(var(--stack-size) * 0.08);
+}
+
+.glitchStack .glitchText {
+  font-family: "STWWordmark", "STWMark", "Arial Black", "Segoe UI", sans-serif;
+  font-size: var(--stack-size);
+  font-style: italic;
+  line-height: 0.82;
+}
+
+.glitchText {
+  position: relative;
+  color: transparent;
+  -webkit-text-stroke: var(--outline) rgba(255, 255, 255, 0.88);
+  text-shadow: 0 0 10px rgb(255 255 255 / 0.18);
+}
+
+.glitchText span {
+  display: inline-block;
+  animation: glitchPaths 7.2s step-end infinite;
+}
+
+.glitchText::before,
+.glitchText::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  -webkit-text-stroke: var(--outline) rgba(255, 255, 255, 0.8);
+  opacity: 0;
+}
+
+.glitchText::before {
+  text-shadow: -2px 0 rgb(224 40 125 / 0.85);
+  animation:
+    glitchPaths 8.1s step-end infinite,
+    glitchOpacity 8.1s step-end infinite,
+    glitchMoveA 10.3s step-end infinite;
+}
+
+.glitchText::after {
+  text-shadow: 2px 0 rgb(27 199 251 / 0.85);
+  animation:
+    glitchPaths 7.6s step-end infinite,
+    glitchOpacity 7.6s step-end infinite,
+    glitchMoveB 9.4s step-end infinite;
+}
+
+@keyframes glitchPaths {
+  0% {
+    clip-path: polygon(0 43%, 83% 43%, 83% 22%, 23% 22%, 23% 60%, 0 60%);
+  }
+  4% {
+    clip-path: polygon(0 75%, 100% 75%, 100% 86%, 0 86%);
+  }
+  30% {
+    clip-path: polygon(0 20%, 100% 20%, 100% 36%, 0 36%);
+  }
+  45% {
+    clip-path: polygon(0 54%, 100% 54%, 100% 70%, 0 70%);
+  }
+  76% {
+    clip-path: polygon(0 8%, 100% 8%, 100% 18%, 0 18%);
+  }
+  90% {
+    clip-path: polygon(0 84%, 100% 84%, 100% 100%, 0 100%);
+  }
+  1%,
+  8%,
+  33%,
+  47%,
+  78%,
+  93%,
+  100% {
+    clip-path: none;
+  }
+}
+
+@keyframes glitchOpacity {
+  0% { opacity: 0; }
+  4% { opacity: 0.55; }
+  7% { opacity: 0; }
+  30% { opacity: 0.45; }
+  33% { opacity: 0; }
+  45% { opacity: 0.62; }
+  48% { opacity: 0; }
+  76% { opacity: 0.38; }
+  79% { opacity: 0; }
+  90% { opacity: 0.52; }
+  94% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes glitchMoveA {
+  0% { transform: translate(0, 0); }
+  15% { transform: translate(-2px, 1px); }
+  60% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes glitchMoveB {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(2px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  70% { transform: translate(1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
