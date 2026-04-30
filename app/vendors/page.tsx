@@ -4,7 +4,6 @@ export default function VendorsPage() {
   return (
     <RegisterChannelLayout
       title="Vendor registration"
-      accent="var(--landing-card-pink)"
       formType="vendor"
     >
       <h2>Role</h2>
