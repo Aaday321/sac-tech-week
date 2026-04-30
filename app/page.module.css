@@ -28,6 +28,8 @@
 }
 
 .terminalBackdrop {
+  --terminal-line-height-em: 1.35em;
+  --terminal-solid-lines: 3.2;
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -43,6 +45,22 @@
   justify-content: flex-end;
   gap: 0.2rem;
   background: radial-gradient(circle at 70% 20%, rgb(255 255 255 / 0.06), transparent 48%);
+  -webkit-mask-image: linear-gradient(
+    to top,
+    rgb(0 0 0 / 1) 0,
+    rgb(0 0 0 / 1) calc(var(--terminal-line-height-em) * var(--terminal-solid-lines)),
+    rgb(0 0 0 / 0.75) calc(var(--terminal-line-height-em) * 5.5),
+    rgb(0 0 0 / 0.35) calc(var(--terminal-line-height-em) * 7.5),
+    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * 10)
+  );
+  mask-image: linear-gradient(
+    to top,
+    rgb(0 0 0 / 1) 0,
+    rgb(0 0 0 / 1) calc(var(--terminal-line-height-em) * var(--terminal-solid-lines)),
+    rgb(0 0 0 / 0.75) calc(var(--terminal-line-height-em) * 5.5),
+    rgb(0 0 0 / 0.35) calc(var(--terminal-line-height-em) * 7.5),
+    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * 10)
+  );
 }
 
 .terminalLine {
