@@ -27,6 +27,8 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 img,
@@ -48,7 +50,6 @@ html {
 
 body {
   min-height: 100%;
-  margin: 0;
   color: var(--app-fg);
   background: var(--app-bg);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
