@@ -47,14 +47,14 @@ export function initLiquidChromeLockup(
 
   let lastDpr = 1;
   let mobileHero = false;
-  const pressedMobilePointers = new Set<number>();
+  const pressedHoldGlitchPointers = new Set<number>();
   const mqCoarse = window.matchMedia("(pointer: coarse)");
   const mqNarrow = window.matchMedia("(max-width: 768px)");
   const syncMobileHero = () => {
     const wasMobile = mobileHero;
     mobileHero = mqCoarse.matches || mqNarrow.matches;
-    if (wasMobile && !mobileHero) {
-      pressedMobilePointers.clear();
+    if (wasMobile !== mobileHero) {
+      pressedHoldGlitchPointers.clear();
     }
   };
   syncMobileHero();
@@ -504,7 +504,7 @@ export function initLiquidChromeLockup(
   let glitchShiftY = 0;
   let glitchSlices: Array<{ y: number; h: number; dx: number }> = [];
 
-  let mobileHoldGlitchPatternAt = 0;
+  let holdGlitchPatternAt = 0;
 
   const randomBetween = (min: number, max: number) =>
     min + Math.random() * (max - min);
@@ -518,7 +518,7 @@ export function initLiquidChromeLockup(
     }));
   };
 
-  const refreshMobileHoldGlitch = () => {
+  const refreshHoldGlitchPattern = () => {
     glitchShiftX = randomBetween(
       -HERO_GLITCH_TIMING.maxShiftPx,
       HERO_GLITCH_TIMING.maxShiftPx,
@@ -527,8 +527,7 @@ export function initLiquidChromeLockup(
     buildGlitchSlices();
   };
 
-  const onMobilePointerDown = (event: PointerEvent) => {
-    if (!mobileHero) return;
+  const onHoldGlitchPointerDown = (event: PointerEvent) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     const rect = wrapper.getBoundingClientRect();
     if (rect.width < 1 || rect.height < 1) return;
@@ -536,18 +535,18 @@ export function initLiquidChromeLockup(
       x: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
       y: Math.max(0, Math.min(1, 1 - (event.clientY - rect.top) / rect.height)),
     };
-    pressedMobilePointers.add(event.pointerId);
-    refreshMobileHoldGlitch();
-    mobileHoldGlitchPatternAt = performance.now();
+    pressedHoldGlitchPointers.add(event.pointerId);
+    refreshHoldGlitchPattern();
+    holdGlitchPatternAt = performance.now();
   };
 
-  const onMobilePointerEnd = (event: PointerEvent) => {
-    pressedMobilePointers.delete(event.pointerId);
+  const onHoldGlitchPointerEnd = (event: PointerEvent) => {
+    pressedHoldGlitchPointers.delete(event.pointerId);
   };
 
-  wrapper.addEventListener("pointerdown", onMobilePointerDown);
-  window.addEventListener("pointerup", onMobilePointerEnd, true);
-  window.addEventListener("pointercancel", onMobilePointerEnd, true);
+  wrapper.addEventListener("pointerdown", onHoldGlitchPointerDown);
+  window.addEventListener("pointerup", onHoldGlitchPointerEnd, true);
+  window.addEventListener("pointercancel", onHoldGlitchPointerEnd, true);
 
   let raf = 0;
   let prevFrameTime = performance.now();
@@ -611,16 +610,16 @@ export function initLiquidChromeLockup(
       buildGlitchSlices();
     }
 
-    const mobileHoldGlitch = mobileHero && pressedMobilePointers.size > 0;
+    const holdGlitchActive = pressedHoldGlitchPointers.size > 0;
     if (
-      mobileHoldGlitch &&
-      now - mobileHoldGlitchPatternAt >= MOBILE_HERO.holdGlitchRefreshMs
+      holdGlitchActive &&
+      now - holdGlitchPatternAt >= HERO_GLITCH_TIMING.holdGlitchRefreshMs
     ) {
-      refreshMobileHoldGlitch();
-      mobileHoldGlitchPatternAt = now;
+      refreshHoldGlitchPattern();
+      holdGlitchPatternAt = now;
     }
 
-    if (now < glitchActiveUntil || mobileHoldGlitch) {
+    if (now < glitchActiveUntil || holdGlitchActive) {
       const w = displayCanvas.width;
       const h = displayCanvas.height;
 
@@ -699,8 +698,8 @@ export function initLiquidChromeLockup(
     glCanvas.remove();
     wrapper.removeEventListener("pointermove", onPointerMove);
     wrapper.removeEventListener("touchmove", onTouchMove);
-    wrapper.removeEventListener("pointerdown", onMobilePointerDown);
-    window.removeEventListener("pointerup", onMobilePointerEnd, true);
-    window.removeEventListener("pointercancel", onMobilePointerEnd, true);
+    wrapper.removeEventListener("pointerdown", onHoldGlitchPointerDown);
+    window.removeEventListener("pointerup", onHoldGlitchPointerEnd, true);
+    window.removeEventListener("pointercancel", onHoldGlitchPointerEnd, true);
   };
 }

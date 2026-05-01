@@ -15,6 +15,8 @@ export const HERO_GLITCH_TIMING = {
   maxBurstMs: 260,
   maxShiftPx: 8,
   maxSlices: 5,
+  /** Click/touch-and-hold on lockup: re-roll slice offsets this often (ms) */
+  holdGlitchRefreshMs: 90,
 } as const;
 
 /** Canvas lockup: smaller scale = smaller STW + wordmark together */
@@ -52,6 +54,4 @@ export const MOBILE_HERO = {
   autoplayPhasePerSecond: 0.65,
   /** Outline stroke width in CSS pixels (scaled by DPR in the bitmap) */
   outlineCssPx: 1,
-  /** While a finger is down, re-roll slice offsets this often (ms) for a live glitch */
-  holdGlitchRefreshMs: 90,
 } as const;
