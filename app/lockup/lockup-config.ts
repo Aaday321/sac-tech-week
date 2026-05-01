@@ -45,3 +45,13 @@ export const LIQUID_CHROME_SHADER = {
   frequencyY: 3,
   interactive: true,
 } as const;
+
+/** Coarse pointer or narrow viewport: fixed outline + autoplay phase */
+export const MOBILE_HERO = {
+  /** How fast `phase` / uTime advances per second (× LIQUID_CHROME_SHADER.speed) */
+  autoplayPhasePerSecond: 0.65,
+  /** Outline stroke width in CSS pixels (scaled by DPR in the bitmap) */
+  outlineCssPx: 1,
+  /** While a finger is down, re-roll slice offsets this often (ms) for a live glitch */
+  holdGlitchRefreshMs: 90,
+} as const;

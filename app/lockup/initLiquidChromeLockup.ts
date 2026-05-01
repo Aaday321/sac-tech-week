@@ -4,6 +4,7 @@ import {
   INTERACTION_TIMING,
   LIQUID_CHROME_SHADER,
   LOCKUP_SIZE,
+  MOBILE_HERO,
   NEON_OUTLINE,
 } from "./lockup-config";
 
@@ -35,12 +36,38 @@ export function initLiquidChromeLockup(
       glContextAttrs,
     ) as WebGLRenderingContext | null);
   const displayCtx = displayCanvas.getContext("2d");
-  if (!gl || !displayCtx) {
+  const glitchSnapshot = document.createElement("canvas");
+  const glitchSnapCtx = glitchSnapshot.getContext("2d");
+  if (!gl || !displayCtx || !glitchSnapCtx) {
     return () => {};
   }
   const glx = gl;
 
   const CONFIG = LIQUID_CHROME_SHADER;
+
+  let lastDpr = 1;
+  let mobileHero = false;
+  const pressedMobilePointers = new Set<number>();
+  const mqCoarse = window.matchMedia("(pointer: coarse)");
+  const mqNarrow = window.matchMedia("(max-width: 768px)");
+  const syncMobileHero = () => {
+    const wasMobile = mobileHero;
+    mobileHero = mqCoarse.matches || mqNarrow.matches;
+    if (wasMobile && !mobileHero) {
+      pressedMobilePointers.clear();
+    }
+  };
+  syncMobileHero();
+  const onMobileMq = () => syncMobileHero();
+  mqCoarse.addEventListener("change", onMobileMq);
+  mqNarrow.addEventListener("change", onMobileMq);
+
+  const mqReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduceMotion = mqReduceMotion.matches;
+  const onReduceMotion = () => {
+    reduceMotion = mqReduceMotion.matches;
+  };
+  mqReduceMotion.addEventListener("change", onReduceMotion);
 
   const VERT_SRC = `
       attribute vec2 aPosition;
@@ -243,72 +270,82 @@ export function initLiquidChromeLockup(
     }
 
     if (drawNeonOutline) {
-      const mouseCanvasX = mouse.x * width;
-      const mouseCanvasY = (1 - mouse.y) * height;
-      const absLeft = centerX + left;
-      const absRight = centerX + left + markWidth + gap + wordBlockWidth;
-      const absTop = centerY + top;
-      const stackBottom = top + 3 * wordHeight + 2 * lineGap;
-      const absBottom =
-        centerY +
-        Math.max(markBaseline + markDescent, stackBottom + wordSize * 0.22);
-      const clamp = (v: number, lo: number, hi: number) =>
-        Math.max(lo, Math.min(v, hi));
-      const nearestX = clamp(mouseCanvasX, absLeft, absRight);
-      const nearestY = clamp(mouseCanvasY, absTop, absBottom);
-      const dist = Math.hypot(mouseCanvasX - nearestX, mouseCanvasY - nearestY);
-      const maxProximityDist =
-        Math.max(width, height) * NEON_OUTLINE.maxProximityDistCanvasFactor;
-      const proximity = Math.max(
-        0,
-        Math.min(1, 1 - dist / maxProximityDist),
-      );
-      const outlinePresence =
-        proximity * proximity * (3 - 2 * proximity);
-
-      if (outlinePresence < NEON_OUTLINE.presenceCutoff) {
-        // no stroke
-      } else {
-        const localMouseX = mouseCanvasX - centerX;
-        const localMouseY = mouseCanvasY - centerY;
-        const radius = Math.max(width, height) * 0.55;
-        const neon = ctx.createRadialGradient(
-          localMouseX,
-          localMouseY,
-          0,
-          localMouseX,
-          localMouseY,
-          radius,
-        );
-        neon.addColorStop(0, "rgba(255, 255, 255, 1)");
-        neon.addColorStop(0.22, "rgba(255, 255, 255, 0.92)");
-        neon.addColorStop(0.5, "rgba(255, 255, 255, 0.56)");
-        neon.addColorStop(1, "rgba(255, 255, 255, 0.2)");
-
-        ctx.strokeStyle = neon;
-        const lineMin =
-          NEON_OUTLINE.lineWidthMinPx +
-          markSize * NEON_OUTLINE.lineWidthMinMarkFactor;
-        const lineMax =
-          NEON_OUTLINE.lineWidthMaxPx +
-          markSize * NEON_OUTLINE.lineWidthMaxMarkFactor;
-        const lo = Math.min(lineMin, lineMax);
-        const hi = Math.max(lineMin, lineMax);
-        ctx.lineWidth = lo + (hi - lo) * outlinePresence;
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
-        const blurMax = Math.max(9, markSize * 0.045);
-        ctx.shadowBlur = blurMax * outlinePresence;
-        ctx.shadowColor = `rgba(255, 255, 255, ${0.96 * outlinePresence})`;
-
+      const strokeLockupGlyphs = () => {
         ctx.font = `italic 800 ${markSize}px "STWMark", "Arial Black", "Segoe UI", sans-serif`;
         ctx.strokeText(markText, left, markBaseline);
-
         ctx.font = `italic 700 ${wordSize}px "STWWordmark", "STWMark", "Arial Black", "Segoe UI", sans-serif`;
-        y = top + wordHeight;
+        let yy = top + wordHeight;
         for (const word of words) {
-          ctx.strokeText(word, wordX, y);
-          y += wordHeight + lineGap;
+          ctx.strokeText(word, wordX, yy);
+          yy += wordHeight + lineGap;
+        }
+      };
+
+      if (mobileHero) {
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.lineWidth = Math.max(1, MOBILE_HERO.outlineCssPx * lastDpr);
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+        strokeLockupGlyphs();
+      } else {
+        const mouseCanvasX = mouse.x * width;
+        const mouseCanvasY = (1 - mouse.y) * height;
+        const absLeft = centerX + left;
+        const absRight = centerX + left + markWidth + gap + wordBlockWidth;
+        const absTop = centerY + top;
+        const stackBottom = top + 3 * wordHeight + 2 * lineGap;
+        const absBottom =
+          centerY +
+          Math.max(markBaseline + markDescent, stackBottom + wordSize * 0.22);
+        const clamp = (v: number, lo: number, hi: number) =>
+          Math.max(lo, Math.min(v, hi));
+        const nearestX = clamp(mouseCanvasX, absLeft, absRight);
+        const nearestY = clamp(mouseCanvasY, absTop, absBottom);
+        const dist = Math.hypot(mouseCanvasX - nearestX, mouseCanvasY - nearestY);
+        const maxProximityDist =
+          Math.max(width, height) * NEON_OUTLINE.maxProximityDistCanvasFactor;
+        const proximity = Math.max(
+          0,
+          Math.min(1, 1 - dist / maxProximityDist),
+        );
+        const outlinePresence =
+          proximity * proximity * (3 - 2 * proximity);
+
+        if (outlinePresence >= NEON_OUTLINE.presenceCutoff) {
+          const localMouseX = mouseCanvasX - centerX;
+          const localMouseY = mouseCanvasY - centerY;
+          const radius = Math.max(width, height) * 0.55;
+          const neon = ctx.createRadialGradient(
+            localMouseX,
+            localMouseY,
+            0,
+            localMouseX,
+            localMouseY,
+            radius,
+          );
+          neon.addColorStop(0, "rgba(255, 255, 255, 1)");
+          neon.addColorStop(0.22, "rgba(255, 255, 255, 0.92)");
+          neon.addColorStop(0.5, "rgba(255, 255, 255, 0.56)");
+          neon.addColorStop(1, "rgba(255, 255, 255, 0.2)");
+
+          ctx.strokeStyle = neon;
+          const lineMin =
+            NEON_OUTLINE.lineWidthMinPx +
+            markSize * NEON_OUTLINE.lineWidthMinMarkFactor;
+          const lineMax =
+            NEON_OUTLINE.lineWidthMaxPx +
+            markSize * NEON_OUTLINE.lineWidthMaxMarkFactor;
+          const lo = Math.min(lineMin, lineMax);
+          const hi = Math.max(lineMin, lineMax);
+          ctx.lineWidth = lo + (hi - lo) * outlinePresence;
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+          const blurMax = Math.max(9, markSize * 0.045);
+          ctx.shadowBlur = blurMax * outlinePresence;
+          ctx.shadowColor = `rgba(255, 255, 255, ${0.96 * outlinePresence})`;
+          strokeLockupGlyphs();
         }
       }
     }
@@ -318,6 +355,7 @@ export function initLiquidChromeLockup(
 
   const resize = () => {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    lastDpr = dpr;
     const rect = wrapper.getBoundingClientRect();
     const width = Math.max(1, Math.floor(rect.width * dpr));
     const height = Math.max(1, Math.floor(rect.height * dpr));
@@ -325,6 +363,8 @@ export function initLiquidChromeLockup(
     glCanvas.height = height;
     displayCanvas.width = width;
     displayCanvas.height = height;
+    glitchSnapshot.width = width;
+    glitchSnapshot.height = height;
     glx.viewport(0, 0, width, height);
     glx.uniform3f(uResolution, width, height, width / height);
     glx.clearColor(0, 0, 0, 0);
@@ -393,14 +433,14 @@ export function initLiquidChromeLockup(
   wrapper.addEventListener("pointermove", onPointerMove);
   wrapper.addEventListener("touchmove", onTouchMove, { passive: true });
 
-  let raf = 0;
-  let frameCount = 0;
   let glitchActiveUntil = 0;
   let nextGlitchAt = performance.now() + 1600;
   let glitchesRemainingInCluster = HERO_GLITCH_TIMING.glitchesPerCluster();
   let glitchShiftX = 0;
   let glitchShiftY = 0;
   let glitchSlices: Array<{ y: number; h: number; dx: number }> = [];
+
+  let mobileHoldGlitchPatternAt = 0;
 
   const randomBetween = (min: number, max: number) =>
     min + Math.random() * (max - min);
@@ -414,7 +454,48 @@ export function initLiquidChromeLockup(
     }));
   };
 
+  const refreshMobileHoldGlitch = () => {
+    glitchShiftX = randomBetween(
+      -HERO_GLITCH_TIMING.maxShiftPx,
+      HERO_GLITCH_TIMING.maxShiftPx,
+    );
+    glitchShiftY = randomBetween(-4, 4);
+    buildGlitchSlices();
+  };
+
+  const onMobilePointerDown = (event: PointerEvent) => {
+    if (!mobileHero) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const rect = wrapper.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return;
+    mouse = {
+      x: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
+      y: Math.max(0, Math.min(1, 1 - (event.clientY - rect.top) / rect.height)),
+    };
+    pressedMobilePointers.add(event.pointerId);
+    refreshMobileHoldGlitch();
+    mobileHoldGlitchPatternAt = performance.now();
+  };
+
+  const onMobilePointerEnd = (event: PointerEvent) => {
+    pressedMobilePointers.delete(event.pointerId);
+  };
+
+  wrapper.addEventListener("pointerdown", onMobilePointerDown);
+  window.addEventListener("pointerup", onMobilePointerEnd, true);
+  window.addEventListener("pointercancel", onMobilePointerEnd, true);
+
+  let raf = 0;
+  let prevFrameTime = performance.now();
+  let frameCount = 0;
+
   const render = (now: number) => {
+    const dtSec = Math.min(0.05, (now - prevFrameTime) / 1000);
+    prevFrameTime = now;
+    if (mobileHero && !reduceMotion) {
+      phase += CONFIG.speed * MOBILE_HERO.autoplayPhasePerSecond * dtSec;
+    }
+
     glx.uniform1f(uTime, phase);
     glx.uniform2f(uMouse, mouse.x, mouse.y);
     glx.clear(glx.COLOR_BUFFER_BIT);
@@ -461,7 +542,16 @@ export function initLiquidChromeLockup(
       buildGlitchSlices();
     }
 
-    if (now < glitchActiveUntil) {
+    const mobileHoldGlitch = mobileHero && pressedMobilePointers.size > 0;
+    if (
+      mobileHoldGlitch &&
+      now - mobileHoldGlitchPatternAt >= MOBILE_HERO.holdGlitchRefreshMs
+    ) {
+      refreshMobileHoldGlitch();
+      mobileHoldGlitchPatternAt = now;
+    }
+
+    if (now < glitchActiveUntil || mobileHoldGlitch) {
       const w = displayCanvas.width;
       const h = displayCanvas.height;
 
@@ -486,6 +576,9 @@ export function initLiquidChromeLockup(
       });
 
       displayCtx.globalCompositeOperation = "source-over";
+      /** Self-drawImage is unreliable when scrolling / on WebKit; copy to a snapshot first. */
+      glitchSnapCtx.clearRect(0, 0, w, h);
+      glitchSnapCtx.drawImage(displayCanvas, 0, 0);
       for (const slice of glitchSlices) {
         const y = h * slice.y;
         const sh = Math.max(1, h * slice.h);
@@ -493,7 +586,7 @@ export function initLiquidChromeLockup(
         displayCtx.beginPath();
         displayCtx.rect(0, y, w, sh);
         displayCtx.clip();
-        displayCtx.drawImage(displayCanvas, slice.dx, 0);
+        displayCtx.drawImage(glitchSnapshot, slice.dx, 0);
         displayCtx.restore();
       }
     }
@@ -520,10 +613,16 @@ export function initLiquidChromeLockup(
   return () => {
     cancelAnimationFrame(raf);
     resizeObserver.disconnect();
+    mqCoarse.removeEventListener("change", onMobileMq);
+    mqNarrow.removeEventListener("change", onMobileMq);
+    mqReduceMotion.removeEventListener("change", onReduceMotion);
     window.removeEventListener("resize", onWindowResize);
     window.removeEventListener("orientationchange", onWindowResize);
     glCanvas.remove();
     wrapper.removeEventListener("pointermove", onPointerMove);
     wrapper.removeEventListener("touchmove", onTouchMove);
+    wrapper.removeEventListener("pointerdown", onMobilePointerDown);
+    window.removeEventListener("pointerup", onMobilePointerEnd, true);
+    window.removeEventListener("pointercancel", onMobilePointerEnd, true);
   };
 }

@@ -25,11 +25,15 @@
 .terminalBackdrop {
   --terminal-line-height-em: 1.35em;
   --terminal-solid-lines: 3.2;
+  --terminal-scroll-clearance: 0px;
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   padding: clamp(1rem, 2.2vw, 2rem);
+  padding-bottom: calc(
+    clamp(1rem, 2.2vw, 2rem) + var(--terminal-scroll-clearance)
+  );
   color: rgb(255 255 255 / 0.34);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: clamp(0.68rem, 1vw, 0.86rem);
@@ -56,6 +60,13 @@
     rgb(0 0 0 / 0.35) calc(var(--terminal-line-height-em) * 7.5),
     rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * 10)
   );
+}
+
+@media (pointer: coarse), (max-width: 768px) {
+  .terminalBackdrop {
+    /* Keeps boot lines above the scroll affordance (safe area + label + chevron). */
+    --terminal-scroll-clearance: 4.75rem;
+  }
 }
 
 .terminalLine {
