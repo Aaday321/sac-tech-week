@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "./theme-provider";
+import { SmartNav } from "./components/smart-nav";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Sacramento Tech Week",
@@ -24,13 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en">
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <SmartNav />
+        {children}
       </body>
     </html>
   );

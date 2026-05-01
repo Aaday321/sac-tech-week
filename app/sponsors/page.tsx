@@ -1,153 +1,84 @@
 import Link from "next/link";
-import { ThemeToggle } from "../components/theme-toggle";
-import { RegistrationForm } from "../components/registration-form";
-import styles from "./sponsors.module.css";
+import styles from "./page.module.css";
+
+const LOREM =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.";
+
+const LOREM_SHORT =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
+const BULLETS = [
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+  "Duis aute irure dolor in reprehenderit in voluptate velit esse.",
+] as const;
 
 export default function SponsorsPage() {
   return (
-    <div className={styles.page}>
-      <header className={styles.topBar}>
-        <Link href="/" className={styles.backLink}>
-          ← Home
-        </Link>
-        <ThemeToggle />
-      </header>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.hero}>
+          <h1 className={styles.heroTitle}>Shape Sacramento&apos;s Innovation Economy.</h1>
+          <hr className={styles.heroAccent} />
+        </header>
 
-      <main className={styles.main}>
-        {/* ── Hero ── */}
-        <section className={styles.hero}>
-          <h1 className={styles.heroHeading}>
-            Shape Sacramento&rsquo;s Innovation Economy.
-          </h1>
-          <hr className={styles.heroDivider} />
+        <section className={styles.section} aria-labelledby="why-sponsors">
+          <h2 id="why-sponsors" className={styles.sectionHeading}>
+            Why Sponsors Win
+          </h2>
+          <p className={styles.body}>{LOREM}</p>
+          <p className={styles.body}>{LOREM}</p>
+          <p className={styles.body}>{LOREM}</p>
         </section>
 
-        {/* ── Value Prop ── */}
-        <section>
-          <h2 className={styles.sectionHeading}>Why Sponsors Win</h2>
-          <div className={styles.sectionBody}>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.
-            </p>
-            <p>
-              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-              officia deserunt mollit anim id est laborum. Sed ut perspiciatis
-              unde omnis iste natus error sit voluptatem accusantium
-              doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo
-              inventore veritatis et quasi architecto beatae vitae dicta sunt
-              explicabo.
-            </p>
-            <p>
-              Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-              aut fugit, sed quia consequuntur magni dolores eos qui ratione
-              voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem
-              ipsum quia dolor sit amet, consectetur, adipisci velit.
-            </p>
-          </div>
-        </section>
-
-        {/* ── Partnership Tiers ── */}
-        <section>
-          <h2 className={styles.sectionHeading}>Partnership Tiers</h2>
+        <section className={styles.section} aria-labelledby="partnership-tiers">
+          <h2 id="partnership-tiers" className={styles.sectionHeading}>
+            Partnership Tiers
+          </h2>
           <div className={styles.tiersGrid}>
-            <div className={styles.tierCard}>
-              <span className={`${styles.tierBadge} ${styles["tierBadge--tower"]}`}>
-                $50k+
-              </span>
-              <h3 className={styles.tierName}>Tower Bridge Partner</h3>
+            <article className={styles.tierCard}>
+              <span className={styles.tierTag}>$50K+</span>
+              <h3 className={styles.cardTitle}>Tower Bridge Partner</h3>
               <ul className={styles.tierList}>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore.
-                </li>
-                <li>
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip commodo.
-                </li>
-                <li>
-                  Duis aute irure dolor in reprehenderit in voluptate velit
-                  esse cillum dolore eu fugiat nulla.
-                </li>
-                <li>
-                  Excepteur sint occaecat cupidatat non proident, sunt in
-                  culpa qui officia deserunt mollit.
-                </li>
+                {BULLETS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
-            </div>
-
-            <div className={styles.tierCard}>
-              <span className={`${styles.tierBadge} ${styles["tierBadge--capitol"]}`}>
-                $25k
-              </span>
-              <h3 className={styles.tierName}>Capitol Corridor Partner</h3>
+            </article>
+            <article className={styles.tierCard}>
+              <span className={styles.tierTag}>$25K</span>
+              <h3 className={styles.cardTitle}>Capitol Corridor Partner</h3>
               <ul className={styles.tierList}>
-                <li>
-                  Sed ut perspiciatis unde omnis iste natus error sit
-                  voluptatem accusantium doloremque laudantium.
-                </li>
-                <li>
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-                  odit aut fugit, sed quia.
-                </li>
-                <li>
-                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit
-                  amet, consectetur adipisci velit.
-                </li>
-                <li>
-                  Quis autem vel eum iure reprehenderit qui in ea voluptate
-                  velit esse quam nihil molestiae.
-                </li>
+                {BULLETS.map((item) => (
+                  <li key={`capitol-${item}`}>{item}</li>
+                ))}
               </ul>
-            </div>
-
-            <div className={styles.tierCard}>
-              <span className={`${styles.tierBadge} ${styles["tierBadge--city"]}`}>
-                $10k
-              </span>
-              <h3 className={styles.tierName}>City of Trees Partner</h3>
+            </article>
+            <article className={styles.tierCard}>
+              <span className={styles.tierTag}>$10K</span>
+              <h3 className={styles.cardTitle}>City of Trees Partner</h3>
               <ul className={styles.tierList}>
-                <li>
-                  At vero eos et accusamus et iusto odio dignissimos ducimus
-                  qui blanditiis praesentium voluptatum.
-                </li>
-                <li>
-                  Nam libero tempore, cum soluta nobis est eligendi optio
-                  cumque nihil impedit quo minus.
-                </li>
-                <li>
-                  Temporibus autem quibusdam et aut officiis debitis rerum
-                  necessitatibus saepe eveniet ut et.
-                </li>
-                <li>
-                  Itaque earum rerum hic tenetur a sapiente delectus, ut aut
-                  reiciendis voluptatibus maiores.
-                </li>
+                {BULLETS.map((item) => (
+                  <li key={`trees-${item}`}>{item}</li>
+                ))}
               </ul>
-            </div>
+            </article>
           </div>
         </section>
 
-        {/* ── CTA / Form ── */}
-        <section className={styles.ctaSection}>
-          <h2 className={styles.sectionHeading}>Become a Partner</h2>
-          <p className={styles.ctaLead}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Fill out the form below and our
-            partnerships team will be in touch within two business days.
-          </p>
-          <div className={styles.formCard}>
-            <p className={styles.ctaHeading}>Partnership Inquiry</p>
-            <RegistrationForm formType="sponsor" />
+        <section className={styles.section} aria-labelledby="become-partner">
+          <h2 id="become-partner" className={styles.sectionHeading}>
+            Become a Partner
+          </h2>
+          <p className={styles.body}>{LOREM_SHORT}</p>
+          <div className={styles.ctaWrap}>
+            <Link className={styles.ctaButton} href="#">
+              SPONSOR INQUIRY FORM
+            </Link>
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

@@ -1,0 +1,53 @@
+@font-face {
+  font-family: "Futura";
+  src: url("/fonts/Futura Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  padding: 1.5rem 5%;
+  background-color: #ffffff;
+  color: #000000;
+  border-bottom: 1px solid #eaeaea;
+  font-family: Futura, sans-serif;
+  font-weight: bold;
+}
+
+.logo {
+  color: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.logo:hover {
+  text-decoration: underline;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.links a {
+  color: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
