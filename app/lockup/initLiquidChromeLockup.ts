@@ -353,12 +353,20 @@ export function initLiquidChromeLockup(
     ctx.restore();
   };
 
-  const resize = () => {
+  /**
+   * iOS Safari often reports tiny or zero getBoundingClientRect() / ResizeObserver sizes
+   * while the URL bar and 100dvh animate during scroll; resizing canvases to 1×1 clears the lockup.
+   */
+  const MIN_CSS_PX = 48;
+  let lastGoodCssW = 0;
+  let lastGoodCssH = 0;
+  let resizeRafId = 0;
+
+  const applyCanvasDimensions = (cssW: number, cssH: number) => {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     lastDpr = dpr;
-    const rect = wrapper.getBoundingClientRect();
-    const width = Math.max(1, Math.floor(rect.width * dpr));
-    const height = Math.max(1, Math.floor(rect.height * dpr));
+    const width = Math.max(1, Math.floor(cssW * dpr));
+    const height = Math.max(1, Math.floor(cssH * dpr));
     glCanvas.width = width;
     glCanvas.height = height;
     displayCanvas.width = width;
@@ -378,18 +386,52 @@ export function initLiquidChromeLockup(
     wrapper.style.setProperty("--glitch-gap", `${gapCss}px`);
   };
 
-  resize();
-  const resizeObserver = new ResizeObserver(resize);
+  const resizeFromWrapperBox = () => {
+    const rect = wrapper.getBoundingClientRect();
+    let cssW = rect.width;
+    let cssH = rect.height;
+
+    const looksValid = cssW >= MIN_CSS_PX && cssH >= MIN_CSS_PX;
+    if (looksValid) {
+      lastGoodCssW = cssW;
+      lastGoodCssH = cssH;
+    } else if (lastGoodCssW >= MIN_CSS_PX && lastGoodCssH >= MIN_CSS_PX) {
+      cssW = lastGoodCssW;
+      cssH = lastGoodCssH;
+    } else if (cssW < 1 || cssH < 1) {
+      return;
+    }
+
+    applyCanvasDimensions(cssW, cssH);
+  };
+
+  const scheduleResize = () => {
+    if (resizeRafId !== 0) {
+      cancelAnimationFrame(resizeRafId);
+    }
+    resizeRafId = requestAnimationFrame(() => {
+      resizeRafId = 0;
+      resizeFromWrapperBox();
+    });
+  };
+
+  resizeFromWrapperBox();
+  const resizeObserver = new ResizeObserver(scheduleResize);
   resizeObserver.observe(wrapper);
 
-  const onWindowResize = () => resize();
+  const onWindowResize = () => scheduleResize();
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("orientationchange", onWindowResize);
+  const visualViewport = window.visualViewport;
+  const onVisualViewportChange = () => scheduleResize();
+  visualViewport?.addEventListener("resize", onVisualViewportChange);
+  visualViewport?.addEventListener("scroll", onVisualViewportChange);
+
   requestAnimationFrame(() => {
-    resize();
-    requestAnimationFrame(resize);
+    scheduleResize();
+    requestAnimationFrame(scheduleResize);
   });
-  void document.fonts.ready.then(() => resize());
+  void document.fonts.ready.then(scheduleResize);
 
   const onPointerMove = (event: PointerEvent) => {
     if (!CONFIG.interactive) return;
@@ -494,6 +536,11 @@ export function initLiquidChromeLockup(
     prevFrameTime = now;
     if (mobileHero && !reduceMotion) {
       phase += CONFIG.speed * MOBILE_HERO.autoplayPhasePerSecond * dtSec;
+    }
+
+    if (glx.isContextLost()) {
+      raf = requestAnimationFrame(render);
+      return;
     }
 
     glx.uniform1f(uTime, phase);
@@ -612,7 +659,12 @@ export function initLiquidChromeLockup(
 
   return () => {
     cancelAnimationFrame(raf);
+    if (resizeRafId !== 0) {
+      cancelAnimationFrame(resizeRafId);
+    }
     resizeObserver.disconnect();
+    visualViewport?.removeEventListener("resize", onVisualViewportChange);
+    visualViewport?.removeEventListener("scroll", onVisualViewportChange);
     mqCoarse.removeEventListener("change", onMobileMq);
     mqNarrow.removeEventListener("change", onMobileMq);
     mqReduceMotion.removeEventListener("change", onReduceMotion);
