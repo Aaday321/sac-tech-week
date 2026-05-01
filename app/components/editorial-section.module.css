@@ -1,0 +1,57 @@
+@font-face {
+  font-family: "Futura Std Book";
+  src: url("/fonts/Futura Std Book.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.section {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 6rem 5%;
+  font-family: "Futura Std Book", Futura, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.heading {
+  text-align: center;
+  font-family: "Futura Std Book", Futura, sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 4rem;
+}
+
+.textGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .textGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+.section p {
+  font-family: "Futura Std Book", Futura, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 4rem;
+}

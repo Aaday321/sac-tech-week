@@ -1,5 +1,7 @@
 "use client";
 
+import { EditorialSection } from "./components/editorial-section";
+import { NavBar } from "./components/nav-bar";
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 
@@ -425,20 +427,24 @@ export default function Home() {
 
   return (
     <main className={styles.home}>
-      <div className={styles.terminalBackdrop} aria-hidden>
-        {terminalLines.map((line, idx) => (
-          <p key={`${line}-${idx}`} className={styles.terminalLine}>
-            {line}
+      <div className={styles.heroArea}>
+        <div className={styles.terminalBackdrop} aria-hidden>
+          {terminalLines.map((line, idx) => (
+            <p key={`${line}-${idx}`} className={styles.terminalLine}>
+              {line}
+            </p>
+          ))}
+          <p className={styles.terminalLine}>
+            {typingLine}
+            <span className={styles.cursor}>_</span>
           </p>
-        ))}
-        <p className={styles.terminalLine}>
-          {typingLine}
-          <span className={styles.cursor}>_</span>
-        </p>
+        </div>
+        <div ref={wrapperRef} className={styles.chromeWrap} aria-label="STW Sac Tech Week">
+          <canvas ref={displayCanvasRef} className={styles.chromeCanvas} />
+        </div>
       </div>
-      <div ref={wrapperRef} className={styles.chromeWrap} aria-label="STW Sac Tech Week">
-        <canvas ref={displayCanvasRef} className={styles.chromeCanvas} />
-      </div>
+      <NavBar />
+      <EditorialSection />
     </main>
   );
 }
