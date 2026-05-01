@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 const TERMINAL_BOOT_LINES = [
-  "$ connect --region sacramento"
+  "$ connect --region sacramento",
+  "[ok] session established: sac-history",
 ];
 
 const TERMINAL_FACT_LINES = [
@@ -17,7 +18,7 @@ const TERMINAL_TIMING = {
   commandStartDelayMs: 8_000,
   statusLineDelayAfterCommandMs: 900,
   typingIntervalMs: 50,
-  firstFactDelayMs: 20_000,
+  firstFactDelayMs: 45_000,
   factIntervalMs: 10_000,
 } as const;
 

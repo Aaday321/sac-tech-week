@@ -5,8 +5,6 @@ const NAV_LINKS = [
   { href: "/vendors", label: "Vendors" },
   { href: "/producers", label: "Producers" },
   { href: "/sponsors", label: "Sponsors" },
-  { href: "/map", label: "Map" },
-  { href: "/events", label: "Schedule" },
 ] as const;
 
 export function NavBar() {

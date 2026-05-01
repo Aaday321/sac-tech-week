@@ -63,8 +63,6 @@ export function LandingPage() {
                     <Link href="/vendors">vendors</Link>
                     <Link href="/producers">producers</Link>
                     <Link href="/sponsors">sponsors</Link>
-                    <Link href="/map">map</Link>
-                    <Link href="/events">schedule</Link>
                   </nav>
                 </div>
               </div>
