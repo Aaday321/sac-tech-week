@@ -354,8 +354,9 @@ export function initLiquidChromeLockup(
   };
 
   /**
-   * iOS Safari often reports tiny or zero getBoundingClientRect() / ResizeObserver sizes
-   * while the URL bar and 100dvh animate during scroll; resizing canvases to 1×1 clears the lockup.
+   * Desktop: size from the wrapper + ResizeObserver (layout truth).
+   * Mobile: one stable size from window + orientation only — no viewport/element observers
+   * (iOS dvh / visualViewport / scroll causes bogus rects and wipes the GL buffers).
    */
   const MIN_CSS_PX = 48;
   let lastGoodCssW = 0;
@@ -415,23 +416,44 @@ export function initLiquidChromeLockup(
     });
   };
 
-  resizeFromWrapperBox();
-  const resizeObserver = new ResizeObserver(scheduleResize);
-  resizeObserver.observe(wrapper);
+  const resizeMobileStatic = () => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (vw < 1 || vh < 1) return;
+    applyCanvasDimensions(vw, vh);
+  };
 
-  const onWindowResize = () => scheduleResize();
-  window.addEventListener("resize", onWindowResize);
-  window.addEventListener("orientationchange", onWindowResize);
+  const onMobileOrientation = () => {
+    window.setTimeout(resizeMobileStatic, 380);
+  };
+
   const visualViewport = window.visualViewport;
   const onVisualViewportChange = () => scheduleResize();
-  visualViewport?.addEventListener("resize", onVisualViewportChange);
-  visualViewport?.addEventListener("scroll", onVisualViewportChange);
+  const onWindowResize = () => scheduleResize();
 
-  requestAnimationFrame(() => {
-    scheduleResize();
-    requestAnimationFrame(scheduleResize);
-  });
-  void document.fonts.ready.then(scheduleResize);
+  /** Snapshot at init; cleanup matches whichever path we mounted. */
+  const useStableMobileResize = mobileHero;
+  let resizeObserver: ResizeObserver | null = null;
+
+  if (useStableMobileResize) {
+    resizeMobileStatic();
+    requestAnimationFrame(resizeMobileStatic);
+    window.addEventListener("orientationchange", onMobileOrientation);
+    void document.fonts.ready.then(resizeMobileStatic);
+  } else {
+    resizeFromWrapperBox();
+    resizeObserver = new ResizeObserver(scheduleResize);
+    resizeObserver.observe(wrapper);
+    window.addEventListener("resize", onWindowResize);
+    window.addEventListener("orientationchange", onWindowResize);
+    visualViewport?.addEventListener("resize", onVisualViewportChange);
+    visualViewport?.addEventListener("scroll", onVisualViewportChange);
+    requestAnimationFrame(() => {
+      scheduleResize();
+      requestAnimationFrame(scheduleResize);
+    });
+    void document.fonts.ready.then(scheduleResize);
+  }
 
   const onPointerMove = (event: PointerEvent) => {
     if (!CONFIG.interactive) return;
@@ -662,14 +684,18 @@ export function initLiquidChromeLockup(
     if (resizeRafId !== 0) {
       cancelAnimationFrame(resizeRafId);
     }
-    resizeObserver.disconnect();
-    visualViewport?.removeEventListener("resize", onVisualViewportChange);
-    visualViewport?.removeEventListener("scroll", onVisualViewportChange);
+    if (useStableMobileResize) {
+      window.removeEventListener("orientationchange", onMobileOrientation);
+    } else {
+      resizeObserver?.disconnect();
+      visualViewport?.removeEventListener("resize", onVisualViewportChange);
+      visualViewport?.removeEventListener("scroll", onVisualViewportChange);
+      window.removeEventListener("resize", onWindowResize);
+      window.removeEventListener("orientationchange", onWindowResize);
+    }
     mqCoarse.removeEventListener("change", onMobileMq);
     mqNarrow.removeEventListener("change", onMobileMq);
     mqReduceMotion.removeEventListener("change", onReduceMotion);
-    window.removeEventListener("resize", onWindowResize);
-    window.removeEventListener("orientationchange", onWindowResize);
     glCanvas.remove();
     wrapper.removeEventListener("pointermove", onPointerMove);
     wrapper.removeEventListener("touchmove", onTouchMove);

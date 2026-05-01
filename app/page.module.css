@@ -22,6 +22,18 @@
   padding: 0;
 }
 
+/* Stable viewport height — avoids URL-bar / dvh thrash that fights canvas resize. */
+@media (pointer: coarse), (max-width: 768px) {
+  .heroArea {
+    min-height: 100svh;
+    height: 100svh;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
 .terminalBackdrop {
   --terminal-line-height-em: 1.35em;
   /** Line-heights of full-opacity band from bottom (before fade). */
