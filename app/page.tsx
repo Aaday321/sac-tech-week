@@ -3,93 +3,32 @@
 import { EditorialSection } from "./components/editorial-section";
 import { NavBar } from "./components/nav-bar";
 import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./page.module.css";
-
-const TERMINAL_BOOT_LINES = [
-  "$ connect --region sacramento",
-  "[ok] session established: sac-history-node",
-];
-
-const TERMINAL_FACT_LINES = [
-  "landmark: Tower Bridge opened in 1935 as a vertical-lift bridge.",
-  "landmark: California State Capitol completed in 1874.",
-  "history: Old Sacramento was designated a National Historic Landmark in 1965.",
-  "landmark: Crocker Art Museum is the oldest public art museum west of the Mississippi.",
-  "history: Sutter's Fort was established in 1839 and anchored early settlement growth.",
-  "landmark: Cathedral of the Blessed Sacrament was dedicated in 1889.",
-] as const;
-
-const TERMINAL_TIMING = {
-  commandStartDelayMs: 3000,
-  statusLineDelayAfterCommandMs: 900,
-  typingIntervalMs: 26,
-  firstFactDelayMs: 15000,
-  factIntervalMs: 10000,
-} as const;
+import { useTerminalLines } from "./useTerminalLines";
 
 const INTERACTION_TIMING = {
   phaseGainPerMove: 3.5,
   maxPointerStepPerFrame: 0.03,
 } as const;
 
+const HERO_GLITCH_TIMING = {
+  glitchesPerCluster: () => Math.floor(Math.random() * 3) + 1,
+  minInClusterGapMs: 5,
+  maxInClusterGapMs: 5,
+  minCooldownMs: 1800,
+  maxCooldownMs: 3600,
+  minBurstMs: 130,
+  maxBurstMs: 260,
+  maxShiftPx: 8,
+  maxSlices: 5,
+} as const;
+
 export default function Home() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const displayCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [terminalLines, setTerminalLines] = useState<string[]>([]);
-  const [typingLine, setTypingLine] = useState("");
-
-  useEffect(() => {
-    let cancelled = false;
-    const timeoutIds: ReturnType<typeof setTimeout>[] = [];
-
-    const schedule = (fn: () => void, delay: number) => {
-      if (cancelled) return;
-      const id = setTimeout(fn, delay);
-      timeoutIds.push(id);
-    };
-
-    const typeLine = (line: string, charIndex = 0, onDone?: () => void) => {
-      if (cancelled) return;
-      if (charIndex < line.length) {
-        const nextIndex = charIndex + 1;
-        setTypingLine(line.slice(0, nextIndex));
-        schedule(
-          () => typeLine(line, nextIndex, onDone),
-          TERMINAL_TIMING.typingIntervalMs,
-        );
-        return;
-      }
-      setTerminalLines((prev) => [...prev, line].slice(-9));
-      setTypingLine("");
-      onDone?.();
-    };
-
-    schedule(() => {
-      typeLine(TERMINAL_BOOT_LINES[0], 0, () => {
-        schedule(
-          () => typeLine(TERMINAL_BOOT_LINES[1]),
-          TERMINAL_TIMING.statusLineDelayAfterCommandMs,
-        );
-      });
-    }, TERMINAL_TIMING.commandStartDelayMs);
-
-    const typeFactAtIndex = (idx: number) => {
-      if (cancelled || idx >= TERMINAL_FACT_LINES.length) return;
-      typeLine(TERMINAL_FACT_LINES[idx], 0, () => {
-        schedule(
-          () => typeFactAtIndex(idx + 1),
-          TERMINAL_TIMING.factIntervalMs,
-        );
-      });
-    };
-
-    schedule(() => typeFactAtIndex(0), TERMINAL_TIMING.firstFactDelayMs);
-
-    return () => {
-      cancelled = true;
-      timeoutIds.forEach((id) => clearTimeout(id));
-    };
-  }, []);
+  const { terminalLines, typingLine } = useTerminalLines();
+  const activeLine = typingLine || " ";
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -231,15 +170,26 @@ export default function Home() {
       height: number,
       fill = "#fff",
       drawNeonOutline = false,
+      options?: {
+        offsetX?: number;
+        offsetY?: number;
+        strokeOnly?: boolean;
+        lineWidth?: number;
+        strokeStyle?: string | CanvasGradient;
+        shadowBlur?: number;
+        shadowColor?: string;
+      },
     ) => {
       const lockupWidth = Math.min(width * 0.9, 1080);
       const markSize = lockupWidth * 0.33;
       const gap = markSize * 0.11;
+      const offsetX = options?.offsetX ?? 0;
+      const offsetY = options?.offsetY ?? 0;
       const centerX = width * 0.5;
       const centerY = height * 0.5;
 
       ctx.save();
-      ctx.translate(centerX, centerY);
+      ctx.translate(centerX + offsetX, centerY + offsetY);
       ctx.fillStyle = fill;
       ctx.textBaseline = "alphabetic";
 
@@ -272,12 +222,24 @@ export default function Home() {
 
       const markBaseline = top + markAscent;
       ctx.font = `italic 800 ${markSize}px "STWMark", "Arial Black", "Segoe UI", sans-serif`;
-      ctx.fillText(markText, left, markBaseline);
+      if (options?.strokeOnly) {
+        ctx.lineWidth = options.lineWidth ?? Math.max(0.8, markSize * 0.0013);
+        ctx.strokeStyle = options.strokeStyle ?? fill;
+        ctx.shadowBlur = options.shadowBlur ?? 0;
+        ctx.shadowColor = options.shadowColor ?? "transparent";
+        ctx.strokeText(markText, left, markBaseline);
+      } else {
+        ctx.fillText(markText, left, markBaseline);
+      }
 
       ctx.font = `italic 700 ${wordSize}px "STWWordmark", "STWMark", "Arial Black", "Segoe UI", sans-serif`;
       let y = top + wordHeight;
       for (const word of words) {
-        ctx.fillText(word, wordX, y);
+        if (options?.strokeOnly) {
+          ctx.strokeText(word, wordX, y);
+        } else {
+          ctx.fillText(word, wordX, y);
+        }
         y += wordHeight + lineGap;
       }
 
@@ -331,6 +293,15 @@ export default function Home() {
       glx.viewport(0, 0, width, height);
       glx.uniform3f(uResolution, width, height, width / height);
       glx.clearColor(0, 0, 0, 0);
+
+      // Keep CSS glitch overlay locked to the same lockup sizing.
+      const lockupWidthCss = Math.min(width * 0.9, 1080) / dpr;
+      const markSizeCss = lockupWidthCss * 0.33;
+      const stackSizeCss = markSizeCss * 0.296;
+      const gapCss = markSizeCss * 0.11;
+      wrapper.style.setProperty("--glitch-mark-size", `${markSizeCss}px`);
+      wrapper.style.setProperty("--glitch-stack-size", `${stackSizeCss}px`);
+      wrapper.style.setProperty("--glitch-gap", `${gapCss}px`);
     };
 
     resize();
@@ -381,7 +352,26 @@ export default function Home() {
 
     let raf = 0;
     let frameCount = 0;
-    const render = () => {
+    let glitchActiveUntil = 0;
+    let nextGlitchAt = performance.now() + 1600;
+    let glitchesRemainingInCluster = HERO_GLITCH_TIMING.glitchesPerCluster();
+    let glitchShiftX = 0;
+    let glitchShiftY = 0;
+    let glitchSlices: Array<{ y: number; h: number; dx: number }> = [];
+
+    const randomBetween = (min: number, max: number) =>
+      min + Math.random() * (max - min);
+
+    const buildGlitchSlices = () => {
+      const count = Math.floor(randomBetween(1, HERO_GLITCH_TIMING.maxSlices + 1));
+      glitchSlices = Array.from({ length: count }, () => ({
+        y: randomBetween(0.18, 0.82),
+        h: randomBetween(0.035, 0.08),
+        dx: randomBetween(-HERO_GLITCH_TIMING.maxShiftPx, HERO_GLITCH_TIMING.maxShiftPx),
+      }));
+    };
+
+    const render = (now: number) => {
       glx.uniform1f(uTime, phase);
       glx.uniform2f(uMouse, mouse.x, mouse.y);
       glx.clear(glx.COLOR_BUFFER_BIT);
@@ -393,6 +383,76 @@ export default function Home() {
       displayCtx.drawImage(glCanvas, 0, 0);
       displayCtx.globalCompositeOperation = "source-over";
       drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height, "#00000000", true);
+
+      if (now >= nextGlitchAt) {
+        const burstMs = randomBetween(
+          HERO_GLITCH_TIMING.minBurstMs,
+          HERO_GLITCH_TIMING.maxBurstMs,
+        );
+        glitchActiveUntil = now + burstMs;
+        glitchesRemainingInCluster -= 1;
+        if (glitchesRemainingInCluster > 0) {
+          nextGlitchAt =
+            now +
+            burstMs +
+            randomBetween(
+              HERO_GLITCH_TIMING.minInClusterGapMs,
+              HERO_GLITCH_TIMING.maxInClusterGapMs,
+            );
+        } else {
+          glitchesRemainingInCluster = HERO_GLITCH_TIMING.glitchesPerCluster();
+          nextGlitchAt =
+            now +
+            burstMs +
+            randomBetween(
+              HERO_GLITCH_TIMING.minCooldownMs,
+              HERO_GLITCH_TIMING.maxCooldownMs,
+            );
+        }
+        glitchShiftX = randomBetween(
+          -HERO_GLITCH_TIMING.maxShiftPx,
+          HERO_GLITCH_TIMING.maxShiftPx,
+        );
+        glitchShiftY = randomBetween(-4, 4);
+        buildGlitchSlices();
+      }
+
+      if (now < glitchActiveUntil) {
+        const w = displayCanvas.width;
+        const h = displayCanvas.height;
+
+        displayCtx.globalCompositeOperation = "lighter";
+        drawMaskText(displayCtx, w, h, "rgba(255, 0, 120, 0)", false, {
+          offsetX: glitchShiftX * -0.45,
+          offsetY: glitchShiftY * 0.35,
+          strokeOnly: true,
+          lineWidth: 1.2,
+          strokeStyle: "rgba(255, 70, 160, 0.85)",
+          shadowBlur: 0,
+          shadowColor: "transparent",
+        });
+        drawMaskText(displayCtx, w, h, "rgba(0, 220, 255, 0)", false, {
+          offsetX: glitchShiftX * 0.5,
+          offsetY: glitchShiftY * -0.35,
+          strokeOnly: true,
+          lineWidth: 1.2,
+          strokeStyle: "rgba(90, 240, 255, 0.82)",
+          shadowBlur: 0,
+          shadowColor: "transparent",
+        });
+
+        displayCtx.globalCompositeOperation = "source-over";
+        for (const slice of glitchSlices) {
+          const y = h * slice.y;
+          const sh = Math.max(1, h * slice.h);
+          displayCtx.save();
+          displayCtx.beginPath();
+          displayCtx.rect(0, y, w, sh);
+          displayCtx.clip();
+          displayCtx.drawImage(displayCanvas, slice.dx, 0);
+          displayCtx.restore();
+        }
+      }
 
       // Hard fallback: if initial frames are blank, force visible text.
       if (frameCount < 3) {
@@ -442,6 +502,14 @@ export default function Home() {
         <div ref={wrapperRef} className={styles.chromeWrap} aria-label="STW Sac Tech Week">
           <canvas ref={displayCanvasRef} className={styles.chromeCanvas} />
         </div>
+        ))}
+        <p className={styles.terminalLine}>
+          {activeLine}
+          <span className={styles.cursor}>_</span>
+        </p>
+      </div>
+      <div ref={wrapperRef} className={styles.chromeWrap} aria-label="STW Sac Tech Week">
+        <canvas ref={displayCanvasRef} className={styles.chromeCanvas} />
       </div>
       <NavBar />
       <EditorialSection />
