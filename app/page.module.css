@@ -24,7 +24,14 @@
 
 .terminalBackdrop {
   --terminal-line-height-em: 1.35em;
+  /** Line-heights of full-opacity band from bottom (before fade). */
   --terminal-solid-lines: 3.2;
+  /** Fade stops as multiples of --terminal-line-height-em from bottom. */
+  --terminal-mask-fade-a: 5.5;
+  --terminal-mask-fade-b: 7.5;
+  --terminal-mask-fade-end: 10;
+  --terminal-mask-alpha-a: 0.75;
+  --terminal-mask-alpha-b: 0.35;
   --terminal-scroll-clearance: 0px;
   position: absolute;
   inset: 0;
@@ -48,17 +55,21 @@
     to top,
     rgb(0 0 0 / 1) 0,
     rgb(0 0 0 / 1) calc(var(--terminal-line-height-em) * var(--terminal-solid-lines)),
-    rgb(0 0 0 / 0.75) calc(var(--terminal-line-height-em) * 5.5),
-    rgb(0 0 0 / 0.35) calc(var(--terminal-line-height-em) * 7.5),
-    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * 10)
+    rgb(0 0 0 / var(--terminal-mask-alpha-a))
+      calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-a)),
+    rgb(0 0 0 / var(--terminal-mask-alpha-b))
+      calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-b)),
+    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-end))
   );
   mask-image: linear-gradient(
     to top,
     rgb(0 0 0 / 1) 0,
     rgb(0 0 0 / 1) calc(var(--terminal-line-height-em) * var(--terminal-solid-lines)),
-    rgb(0 0 0 / 0.75) calc(var(--terminal-line-height-em) * 5.5),
-    rgb(0 0 0 / 0.35) calc(var(--terminal-line-height-em) * 7.5),
-    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * 10)
+    rgb(0 0 0 / var(--terminal-mask-alpha-a))
+      calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-a)),
+    rgb(0 0 0 / var(--terminal-mask-alpha-b))
+      calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-b)),
+    rgb(0 0 0 / 0) calc(var(--terminal-line-height-em) * var(--terminal-mask-fade-end))
   );
 }
 
@@ -66,6 +77,14 @@
   .terminalBackdrop {
     /* Keeps boot lines above the scroll affordance (safe area + label + chevron). */
     --terminal-scroll-clearance: 4.75rem;
+    /* Narrow viewports wrap more — keep a taller solid band and push fade higher. */
+    --terminal-solid-lines: 6;
+    --terminal-mask-fade-a: 9;
+    --terminal-mask-fade-b: 13;
+    --terminal-mask-fade-end: 18;
+    --terminal-mask-alpha-a: 0.88;
+    --terminal-mask-alpha-b: 0.55;
+    color: rgb(255 255 255 / 0.42);
   }
 }
 
