@@ -108,6 +108,13 @@
   display: block;
 }
 
+@media (pointer: coarse), (max-width: 768px) {
+  /* Own compositor layer — reduces blanking when the page scrolls under iOS Safari. */
+  .chromeCanvas {
+    transform: translateZ(0);
+  }
+}
+
 .scrollHint {
   position: absolute;
   left: 50%;
