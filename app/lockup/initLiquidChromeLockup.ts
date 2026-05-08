@@ -64,8 +64,10 @@ export function initLiquidChromeLockup(
 
   const mqReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let reduceMotion = mqReduceMotion.matches;
+  let lastHeavyDrawKey = "";
   const onReduceMotion = () => {
     reduceMotion = mqReduceMotion.matches;
+    lastHeavyDrawKey = "";
   };
   mqReduceMotion.addEventListener("change", onReduceMotion);
 
@@ -364,8 +366,10 @@ export function initLiquidChromeLockup(
   let resizeRafId = 0;
 
   const applyCanvasDimensions = (cssW: number, cssH: number) => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dprCap = mobileHero ? 1.5 : 2;
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     lastDpr = dpr;
+    lastHeavyDrawKey = "";
     const width = Math.max(1, Math.floor(cssW * dpr));
     const height = Math.max(1, Math.floor(cssH * dpr));
     glCanvas.width = width;
@@ -551,8 +555,29 @@ export function initLiquidChromeLockup(
   let raf = 0;
   let prevFrameTime = performance.now();
   let frameCount = 0;
+  let tabVisible = document.visibilityState !== "hidden";
+
+  const onVisibilityChange = () => {
+    tabVisible = document.visibilityState !== "hidden";
+    if (!tabVisible) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      return;
+    }
+    prevFrameTime = performance.now();
+    lastHeavyDrawKey = "";
+    if (raf === 0) {
+      raf = requestAnimationFrame(render);
+    }
+  };
+  document.addEventListener("visibilitychange", onVisibilityChange);
 
   const render = (now: number) => {
+    if (!tabVisible) {
+      raf = 0;
+      return;
+    }
+
     const dtSec = Math.min(0.05, (now - prevFrameTime) / 1000);
     prevFrameTime = now;
     if (mobileHero && !reduceMotion) {
@@ -564,20 +589,9 @@ export function initLiquidChromeLockup(
       return;
     }
 
-    glx.uniform1f(uTime, phase);
-    glx.uniform2f(uMouse, mouse.x, mouse.y);
-    glx.clear(glx.COLOR_BUFFER_BIT);
-    glx.drawArrays(glx.TRIANGLES, 0, 3);
-    glx.flush();
+    const holdGlitchActive = pressedHoldGlitchPointers.size > 0;
 
-    displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
-    drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height);
-    displayCtx.globalCompositeOperation = "source-in";
-    displayCtx.drawImage(glCanvas, 0, 0);
-    displayCtx.globalCompositeOperation = "source-over";
-    drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height, "#00000000", true);
-
-    if (now >= nextGlitchAt) {
+    if (!reduceMotion && now >= nextGlitchAt) {
       const burstMs = randomBetween(
         HERO_GLITCH_TIMING.minBurstMs,
         HERO_GLITCH_TIMING.maxBurstMs,
@@ -610,8 +624,8 @@ export function initLiquidChromeLockup(
       buildGlitchSlices();
     }
 
-    const holdGlitchActive = pressedHoldGlitchPointers.size > 0;
     if (
+      !reduceMotion &&
       holdGlitchActive &&
       now - holdGlitchPatternAt >= HERO_GLITCH_TIMING.holdGlitchRefreshMs
     ) {
@@ -619,10 +633,41 @@ export function initLiquidChromeLockup(
       holdGlitchPatternAt = now;
     }
 
-    if (now < glitchActiveUntil || holdGlitchActive) {
-      const w = displayCanvas.width;
-      const h = displayCanvas.height;
+    const glitching =
+      !reduceMotion && (now < glitchActiveUntil || holdGlitchActive);
 
+    /** Mobile autoplay advances `phase` every frame unless reduced-motion is on. */
+    const chromeAnimating = mobileHero && !reduceMotion;
+
+    const w = displayCanvas.width;
+    const h = displayCanvas.height;
+    const heavyKey = `${phase.toFixed(5)}|${mouse.x}|${mouse.y}|${w}|${h}|${glitching ? 1 : 0}`;
+    const canSkipHeavy =
+      frameCount > 2 &&
+      !chromeAnimating &&
+      !glitching &&
+      heavyKey === lastHeavyDrawKey;
+
+    if (canSkipHeavy) {
+      raf = requestAnimationFrame(render);
+      return;
+    }
+    lastHeavyDrawKey = heavyKey;
+
+    glx.uniform1f(uTime, phase);
+    glx.uniform2f(uMouse, mouse.x, mouse.y);
+    glx.clear(glx.COLOR_BUFFER_BIT);
+    glx.drawArrays(glx.TRIANGLES, 0, 3);
+    glx.flush();
+
+    displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+    drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height);
+    displayCtx.globalCompositeOperation = "source-in";
+    displayCtx.drawImage(glCanvas, 0, 0);
+    displayCtx.globalCompositeOperation = "source-over";
+    drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height, "#00000000", true);
+
+    if (glitching) {
       displayCtx.globalCompositeOperation = "lighter";
       drawMaskText(displayCtx, w, h, "rgba(255, 0, 120, 0)", false, {
         offsetX: glitchShiftX * -0.45,
@@ -659,16 +704,21 @@ export function initLiquidChromeLockup(
       }
     }
 
-    if (frameCount < 3) {
-      const sample = displayCtx.getImageData(
-        Math.floor(displayCanvas.width * 0.5),
-        Math.floor(displayCanvas.height * 0.5),
-        1,
-        1,
-      ).data;
-      if (sample[3] === 0) {
-        displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
-        drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height, "#d9dde3");
+    /** Single sync GPU readback on first paint — `getImageData` every frame would stall the main thread. */
+    if (frameCount === 0) {
+      try {
+        const sample = displayCtx.getImageData(
+          Math.floor(displayCanvas.width * 0.5),
+          Math.floor(displayCanvas.height * 0.5),
+          1,
+          1,
+        ).data;
+        if (sample[3] === 0) {
+          displayCtx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+          drawMaskText(displayCtx, displayCanvas.width, displayCanvas.height, "#d9dde3");
+        }
+      } catch {
+        /* tainted canvas / context loss */
       }
     }
     frameCount += 1;
@@ -679,6 +729,7 @@ export function initLiquidChromeLockup(
   raf = requestAnimationFrame(render);
 
   return () => {
+    document.removeEventListener("visibilitychange", onVisibilityChange);
     cancelAnimationFrame(raf);
     if (resizeRafId !== 0) {
       cancelAnimationFrame(resizeRafId);

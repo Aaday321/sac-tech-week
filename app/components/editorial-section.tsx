@@ -1,47 +1,129 @@
-import Image from "next/image";
+import Link from "next/link";
 import styles from "./editorial-section.module.css";
 
 export function EditorialSection() {
   return (
-    <section className={styles.section}>
-      <h2 className={styles.heading}>Experience Sacramento Tech Week!</h2>
-      <div className={styles.textGrid}>
-        <div>
-          <p>
-            <strong>Announcing 2026 Participants!</strong>
+    <section className={styles.section} aria-labelledby="experience-heading">
+      <div className={styles.experienceLayout}>
+        <div className={styles.experienceCopy}>
+          <p className={styles.systemMetaRow}>
+            <span className={styles.systemStatusDot} aria-hidden />
+            <span className={styles.systemMetaText}>[ SYSTEM 01 / TECH WEEK INTERFACE ]</span>
           </p>
-          <p>The Sacramento Tech Week 2026 Program, Map, and Regional Guide are now live!</p>
-          <p>The 2026 edition of Sacramento Tech Week will take place October 18–24, 2026.</p>
-          <p>
-            Sacramento Tech Week celebrates the evolving intersection of technology, design, and culture within
-            the Greater Sacramento region. Technology companies, research labs, civic organizations, and creative
-            collectives host events during Sacramento Tech Week—ranging from pitch competitions to robotics
-            demonstrations—that invite attendees to connect in new and meaningful ways.
-          </p>
-        </div>
-        <div>
-          <p>
+
+          <h1 id="experience-heading" className={styles.experienceTitle}>
+            <span className={`${styles.experienceTitleLine} ${styles.experienceTitleLineMobile}`}>
+              Experience Sacramento
+            </span>
+            <span className={`${styles.experienceTitleLine} ${styles.experienceTitleLineMobile}`}>
+              Tech Week
+            </span>
+            <span className={`${styles.experienceTitleLine} ${styles.experienceTitleLineDesktop}`}>
+              Experience
+            </span>
+            <span className={`${styles.experienceTitleLine} ${styles.experienceTitleLineDesktop}`}>
+              Sacramento Tech
+            </span>
+            <span className={`${styles.experienceTitleLine} ${styles.experienceTitleLineDesktop}`}>
+              Week
+            </span>
+          </h1>
+
+          <p className={styles.experienceLede}>
             Sacramento Tech Week provides a central platform for the week&rsquo;s diverse events, exhibitions, and
             technical happenings across different organizations, establishing this as the premier window for
             innovation in the city.
           </p>
-          <p>
-            We provide a comprehensive participant list, map, program, and neighborhood guide with insider tips on
-            where to eat, drink, and shop while discovering the future of the creative economy.
-          </p>
-          <p>
-            Sacramento Tech Week seeks to foster new, and strengthen existing connections between founders,
-            investors, engineers, and the community through curating an inclusive and strategic guide for the week.
-          </p>
+
+          <div className={styles.ctaRow}>
+            <Link href="/events" className={styles.primaryBtn}>
+              <span>Primary button</span>
+              <span className={styles.primaryBtnArrow} aria-hidden>
+                →
+              </span>
+            </Link>
+            <Link href="/map" className={styles.secondaryBtn}>
+              Secondary button
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.experienceArtifact} aria-label="Artifact view">
+          <p className={styles.artifactFrameLabelTL}>[ ARTIFACT VIEW / 01 ]</p>
+          <p className={styles.artifactFrameLabelBR}>[ STATE: STATIC ]</p>
+          <div className={styles.artifactFrameInner}>
+            <img alt="" className={styles.artifactHeroImg} decoding="async" />
+          </div>
         </div>
       </div>
-      <Image
-        src="/sacramento-tech.webp"
-        alt="Sacramento Tech"
-        width={1600}
-        height={900}
-        className={styles.image}
-      />
+
+      <h2 className={styles.coreSystemsMobileTitle}>Core systems</h2>
+
+      <div className={styles.coreSystems}>
+        <span className={styles.objTag} aria-hidden>
+          OBJ_001
+        </span>
+        <span className={styles.coreLabel}>CORE SYSTEMS</span>
+      </div>
+
+      <div className={styles.pillarsFrame} role="region" aria-label="Core systems">
+        <div className={styles.pillars}>
+          <article className={styles.pillar}>
+            <p className={styles.pillarId}>[ 01 / VENDORS ]</p>
+            <h2 className={styles.pillarKicker}>Showcase your work</h2>
+            <p className={styles.pillarBody}>
+              Bring your product, service, food, retail concept, or local brand to the people shaping
+              Sacramento&rsquo;s next chapter in tech.
+            </p>
+            <div className={styles.pillarSpacer} aria-hidden />
+            <Link href="/vendors" className={styles.pillarBtn}>
+              Vendor sign up
+            </Link>
+          </article>
+
+          <article className={styles.pillar}>
+            <p className={styles.pillarId}>[ 02 / PRODUCERS ]</p>
+            <h2 className={styles.pillarKicker}>Help build tech week</h2>
+            <p className={styles.pillarBody}>
+              Join the team creating the events, experiences, panels, workshops, and community moments that bring
+              Sacramento Tech Week to life.
+            </p>
+            <div className={styles.pillarSpacer} aria-hidden />
+            <Link href="/producers" className={styles.pillarBtn}>
+              Producer sign up
+            </Link>
+          </article>
+
+          <article className={styles.pillar}>
+            <p className={styles.pillarId}>[ 03 / SPONSORS ]</p>
+            <h2 className={styles.pillarKicker}>Back Sacramento&rsquo;s future</h2>
+            <p className={styles.pillarBody}>
+              Support a citywide platform for founders, builders, creatives, and communities moving Sacramento&rsquo;s
+              innovation economy forward.
+            </p>
+            <div className={styles.pillarSpacer} aria-hidden />
+            <Link href="/sponsors" className={styles.pillarBtn}>
+              Sponsor sign up
+            </Link>
+          </article>
+        </div>
+      </div>
+
+      <div className={styles.artifactFooter}>
+        <p className={styles.artifactMeta}>[ ARTIFACT VIEW / 02 ]</p>
+        <p className={styles.stateTag}>[ STATE: STATIC ]</p>
+      </div>
+
+      <footer className={styles.siteFooter}>
+        <div className={styles.siteFooterBand}>
+          <p className={styles.footerStatus}>
+            ©2026 SAC_TECH_WEEK — SYSTEM READY / SIGNAL{" "}
+            <br className={styles.footerStatusBreak} />
+            STABLE
+          </p>
+        </div>
+        <div className={styles.siteFooterBlackBar} aria-hidden />
+      </footer>
     </section>
   );
 }
