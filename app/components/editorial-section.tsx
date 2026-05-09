@@ -59,14 +59,11 @@ export function EditorialSection() {
           </p>
 
           <div className={styles.ctaRow}>
-            <Link href="/events" className={styles.primaryBtn}>
-              <span>Primary button</span>
+            <Link href="/producers" className={styles.primaryBtn}>
+              <span>Become a producer</span>
               <span className={styles.primaryBtnArrow} aria-hidden>
                 →
               </span>
-            </Link>
-            <Link href="/map" className={styles.secondaryBtn}>
-              Secondary button
             </Link>
           </div>
         </div>

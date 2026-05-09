@@ -1,11 +1,7 @@
 import Link from "next/link";
 import styles from "./nav-bar.module.css";
 
-const NAV_LINKS = [
-  { href: "/vendors", label: "Vendors" },
-  { href: "/producers", label: "Producers" },
-  { href: "/sponsors", label: "Sponsors" },
-] as const;
+const NAV_LINKS = [{ href: "/producers", label: "Producers" }] as const;
 
 export function NavBar() {
   return (

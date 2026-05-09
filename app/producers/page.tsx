@@ -66,7 +66,12 @@ export default function ProducersPage() {
 
         <section className={styles.section} aria-label="Producer inquiry">
           <div className={styles.ctaWrap}>
-            <Link className={styles.ctaButton} href="#">
+            <Link
+              className={styles.ctaButton}
+              href="https://forms.gle/1ZNzWC138Qcjy7hQ7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               PRODUCER INQUIRY FORM
             </Link>
           </div>
