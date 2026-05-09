@@ -60,9 +60,7 @@ export function LandingPage() {
                 <div className={styles.headerNav}>
                   <ThemeToggle />
                   <nav className={styles.navLinks} aria-label="Primary">
-                    <Link href="/vendors">vendors</Link>
                     <Link href="/producers">producers</Link>
-                    <Link href="/sponsors">sponsors</Link>
                   </nav>
                 </div>
               </div>

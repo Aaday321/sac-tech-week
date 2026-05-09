@@ -2,6 +2,7 @@
 
 import { EditorialSection } from "./components/editorial-section";
 import { NavBar } from "./components/nav-bar";
+import { SignatureEvents } from "./components/signature-events";
 import { useEffect, useRef } from "react";
 import styles from "./page.module.css";
 import { initLiquidChromeLockup } from "./lockup";
@@ -65,6 +66,7 @@ export default function Home() {
       </div>
       <div id="main-content">
         <NavBar />
+        <SignatureEvents />
         <EditorialSection />
       </div>
     </main>
