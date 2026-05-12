@@ -7,6 +7,15 @@
   padding: 0;
 }
 
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+}
+
 .heroArea {
   width: 100%;
   min-height: 100vh;
