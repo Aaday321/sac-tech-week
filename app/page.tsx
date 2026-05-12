@@ -1,6 +1,6 @@
 "use client";
 
-import { EditorialSection } from "./components/editorial-section";
+import { EditorialFooter, EditorialIntro } from "./components/editorial-section";
 import { NavBar } from "./components/nav-bar";
 import { SignatureEvents } from "./components/signature-events";
 import { useEffect, useRef } from "react";
@@ -64,10 +64,11 @@ export default function Home() {
           </span>
         </button>
       </div>
-      <div id="main-content">
+      <div id="main-content" className={styles.mainContent}>
         <NavBar />
+        <EditorialIntro />
         <SignatureEvents />
-        <EditorialSection />
+        <EditorialFooter />
       </div>
     </main>
   );
