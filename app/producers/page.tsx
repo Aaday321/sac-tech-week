@@ -1,67 +1,71 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const ROLE_LOREM =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
-
-const RESPONSIBILITIES = [
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+const GENERAL_INFORMATION = [
+  "The 2026 edition of Sac Tech Week will take place Sunday, October 18 – Saturday, October 24, 2026.",
+  "This application is for technology companies, research labs, civic organizations, and creative collectives specializing in AI, automation, Civic Innovation, GovTech, MedTech, HealthTech, and Robotics to be included in the SacTech Week program and guide.",
+  "To be included in the Sac Tech Week program, events, pitch competitions, and lectures must take place Sunday, October 18 – Saturday, October 24, 2026.",
+  "All Sac Tech Week events must be accessible to the general public. Events may be free of charge, or accessible through reservations or tickets. Sac Tech Week does not facilitate individual event registration.",
+  "Sac Tech Week participants execute their own exhibition / project / events.",
+  "All images submitted may be used for promotional purposes.",
 ] as const;
 
-const PERKS = [
-  "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
-  "Qui officia deserunt mollit anim id est laborum sed ut perspiciatis.",
-  "Omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+const PARTICIPANTS_RECEIVE = [
+  "Listing and page on sactechweek.com linking to participant's website",
+  "Listing in the official STW '26 Guide",
+  "Inclusion in social media posts",
+  "Inclusion in Official STW press releases and potential press articles in local press and beyond",
+  "Listing in STW e-newsletters to targeted technology and innovation audience",
+  "Engagement with an expanded audience actively discovering and scaling technology in the Greater Sacramento region.",
 ] as const;
 
-const EXAMPLE_LOREM =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean lacinia bibendum nulla sed consectetur. Curabitur blandit tempus porttitor.";
+const FEES = [
+  "Participant Fees are $350 Participation.",
+  "The Non-Profit Rate for 501(c)3 organizations is $175 Participation.",
+  "Fees support the administration and marketing of SacTech Week.",
+  "If you need financial assistance to apply, please email hello@sactechweek.org",
+] as const;
 
 export default function ProducersPage() {
   return (
     <main className={styles.page}>
       <div className={styles.container}>
         <header className={styles.hero}>
-          <h1 className={styles.heroTitle}>Event Producer Registration</h1>
+          <h1 className={styles.heroTitle}>Apply to Sac Tech Week 2026</h1>
           <hr className={styles.heroAccent} />
         </header>
 
-        <section className={styles.section} aria-labelledby="producer-role">
-          <h2 id="producer-role" className={styles.sectionHeading}>
-            Role
-          </h2>
-          <p className={styles.body}>{ROLE_LOREM}</p>
-        </section>
-
-        <section className={styles.section} aria-labelledby="producer-responsibilities">
-          <h2 id="producer-responsibilities" className={styles.sectionHeading}>
-            Responsibilities
+        <section className={styles.section} aria-labelledby="general-information">
+          <h2 id="general-information" className={styles.sectionHeading}>
+            General Information
           </h2>
           <ul className={styles.list}>
-            {RESPONSIBILITIES.map((item) => (
+            {GENERAL_INFORMATION.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </section>
 
-        <section className={styles.section} aria-labelledby="producer-perks">
-          <h2 id="producer-perks" className={styles.sectionHeading}>
-            Perks
+        <section className={styles.section} aria-labelledby="participants-receive">
+          <h2 id="participants-receive" className={styles.sectionHeading}>
+            SacTech Week Participants Receive:
           </h2>
           <ul className={styles.list}>
-            {PERKS.map((item) => (
+            {PARTICIPANTS_RECEIVE.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </section>
 
-        <section className={styles.section} aria-labelledby="producer-example">
-          <h2 id="producer-example" className={styles.sectionHeading}>
-            Example
+        <section className={styles.section} aria-labelledby="fees">
+          <h2 id="fees" className={styles.sectionHeading}>
+            Fees
           </h2>
-          <p className={styles.body}>{EXAMPLE_LOREM}</p>
+          <ul className={styles.list}>
+            {FEES.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
         </section>
 
         <section className={styles.section} aria-label="Producer inquiry">
