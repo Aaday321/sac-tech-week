@@ -20,8 +20,6 @@ const PARTICIPANTS_RECEIVE = [
 ] as const;
 
 const FEES = [
-  "Participant Fees are $350 Participation.",
-  "The Non-Profit Rate for 501(c)3 organizations is $175 Participation.",
   "Fees support the administration and marketing of SacTech Week.",
   "If you need financial assistance to apply, please email hello@sactechweek.org",
 ] as const;
